@@ -127,6 +127,8 @@ Một trang, chia khối. Nút “Lưu” dính ở đầu trang. Tạo mới lu
 | 5. SEO | Tiêu đề SEO, mô tả SEO, khung xem trước kết quả Google | `updateProduct` |
 | `PublishPanel` | Trạng thái hiện tại; nút “Đăng bán” / “Chuyển về nháp” / “Ngừng bán”. Thiếu điều kiện → hiện danh sách còn thiếu | `setProductStatus` |
 
+Ghi chú triển khai (3c): form làm xong khối 1, 2, 5 và `PublishPanel`. Khối 3 (ảnh) làm ở G4, khối 4 (bộ sưu tập) ở G5. Ô mô tả chi tiết là ô nhập thường; **xem trước Markdown hoãn** tới khi chọn thư viện render Markdown an toàn (không cho HTML thô) ở F3, vì cần thêm thư viện. Khi sửa, bấm Lưu sẽ gọi `updateProduct` rồi `upsertVariants`. Chuyển trạng thái chỉ bấm được khi không còn thay đổi chưa lưu. Cảnh báo rời trang chỉ áp dụng khi đóng/tải lại tab (chưa chặn khi bấm link trong web).
+
 **Quy tắc**
 - Rời trang khi có thay đổi chưa lưu → hỏi lại.
 - Ảnh tự nén ở trình duyệt trước khi upload nếu > 5 MB.

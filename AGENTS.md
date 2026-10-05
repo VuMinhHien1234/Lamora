@@ -128,10 +128,10 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
 - [x] **G1 + F1** (đã code, ⏸ chờ chủ shop duyệt `/admin/ui-kit`) Token `03` mục 2–4, font, component `03` mục 7, trang `/admin/ui-kit`, khung admin (M0), đăng nhập (M1), đổi mật khẩu (M10), khung shop (S0) + kho giỏ hàng
   → ⏸ **Dừng, chờ chủ shop duyệt `/admin/ui-kit`** trên điện thoại và máy tính trước khi làm tiếp.
 - [x] **B1 → G2** Danh mục: backend rồi màn hình M7
-- [ ] **B3 → G3** Sản phẩm admin: backend rồi M5, M6 (thông tin chung, biến thể)
+- [x] **B3 → G3** Sản phẩm admin: backend rồi M5, M6 (thông tin chung, biến thể)
   - [x] **3a** backend `product` (tạo/sửa, biến thể, trạng thái, danh sách admin) + test
   - [x] **3b** M5 danh sách sản phẩm
-  - [ ] **3c** M6 form thêm/sửa + bảng biến thể
+  - [x] **3c** M6 form thêm/sửa + bảng biến thể (ảnh → G4, bộ sưu tập → G5, xem trước Markdown → F3)
 - [ ] **B4 → G4** `media` + ảnh sản phẩm trong M6
 - [ ] **B2 → G5** Bộ sưu tập: backend rồi M8, M9
 
@@ -320,3 +320,4 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.3 | 2026-10-05 | Xong B1→G2 (Danh mục). Thêm component Switch. Sắp xếp bằng nút ↑↓ thay vì kéo-thả |
 | v1.4 | 2026-10-06 | Chia B3→G3 thành 3a/3b/3c. Xong 3a: backend sản phẩm và biến thể |
 | v1.5 | 2026-10-06 | Xong 3b: M5 danh sách sản phẩm. Thêm component Pagination, `lib/cloudinary`, `lib/date` |
+| v1.6 | 2026-10-06 | Xong 3c: M6 form sản phẩm (thông tin chung, biến thể, SEO, khung đăng bán). Hoàn tất B3→G3 |

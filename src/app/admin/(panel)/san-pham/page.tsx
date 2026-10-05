@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdminPage } from "@/features/auth";
-import { adminListCategories } from "@/features/category";
 import { adminListProducts, ProductListView } from "@/features/product";
+import { loadCategoryOptions } from "./category-options";
 
 export const metadata: Metadata = { title: "Sản phẩm" };
 
@@ -19,10 +19,10 @@ function firstValues(
 export default async function ProductsPage({ searchParams }: PageProps) {
   await requireAdminPage();
   const params = firstValues(await searchParams);
-  const [result, tree] = await Promise.all([adminListProducts(params), adminListCategories()]);
-  const categories = tree
-    .flatMap((node) => [node, ...node.children])
-    .map(({ id, name }) => ({ id, name }));
+  const [result, categories] = await Promise.all([
+    adminListProducts(params),
+    loadCategoryOptions(),
+  ]);
   const filters = {
     q: params.q?.trim() || undefined,
     status: params.status || undefined,
