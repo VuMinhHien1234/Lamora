@@ -1,4 +1,5 @@
 import { MoneyText } from "@/components/ui/money-text";
+import { Pagination } from "@/components/ui/pagination";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { KitRow, KitSection } from "./kit-section";
 
@@ -25,6 +26,9 @@ export function KitAdmin() {
       </KitRow>
       <KitRow label="Số tiền">
         <MoneyText amount={1250000} />
+      </KitRow>
+      <KitRow label="Phân trang">
+        <Pagination page={5} pageCount={10} hrefFor={(n) => `#trang-${n}`} />
       </KitRow>
     </KitSection>
   );

@@ -110,6 +110,8 @@ Bố cục: máy tính 2 cột (trái: nội dung đơn, phải: thao tác); đi
 | `ProductTable` | Ảnh, tên, danh mục, giá từ, tổng tồn kho, số biến thể, trạng thái, ngày cập nhật | |
 | `RowActions` | Sửa · Xem trên web · Đổi trạng thái | `setProductStatus` |
 
+Ghi chú triển khai (3b): bộ lọc, tab trạng thái và số trang nằm trên địa chỉ (`?q=&status=&categoryId=&lowStock=1&page=`) nên tải lại hoặc gửi link vẫn giữ nguyên. Bảng gọn 5 cột trên máy tính, chuyển thành thẻ dưới 768px. Tab chưa hiện số lượng sản phẩm từng trạng thái. “Sửa” và “+ Thêm sản phẩm” dẫn tới M6 (làm ở 3c); “Xem trên web” dẫn tới trang chi tiết khách (làm ở F3).
+
 ---
 
 ## 8. M6 — Thêm / sửa sản phẩm

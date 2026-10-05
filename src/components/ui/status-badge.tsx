@@ -45,7 +45,7 @@ export function StatusBadge(props: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-block px-2.5 py-1 text-[0.8125rem] leading-none font-medium",
+        "inline-block px-2.5 py-1 text-[0.8125rem] leading-none font-medium whitespace-nowrap",
         tone.className,
       )}
     >

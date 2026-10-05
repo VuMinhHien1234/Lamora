@@ -240,6 +240,7 @@ Trong lúc chưa có logo chính thức:
 
 ### 7.3 Các component khác
 
+- **`Pagination`** — phân trang bằng liên kết: ‹ Trước · 1 … 4 5 6 … 10 · Sau ›, trang hiện tại có viền `ink-900`, ô chạm ≥ 44px; ẩn khi chỉ có 1 trang. Có trong `/admin/ui-kit`.
 - **`Switch`** — công tắc bật/tắt (`role="switch"`), ô 44×24px bo 2px, nút gạt vuông bo 2px; bật: nền `ink-900`, tắt: nền `sand-200`. Dùng cho “Hiển thị trên website”, “Đây là quà tặng”. Có trong `/admin/ui-kit`.
 | Component | Mô tả ngắn |
 |---|---|
