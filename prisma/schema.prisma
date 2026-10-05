@@ -1,0 +1,325 @@
+// Schema theo docs/02-DATABASE.md. Đổi schema: tạo migration mới, KHÔNG sửa migration cũ.
+// URL kết nối nằm ở prisma.config.ts (Prisma 7) và src/lib/db.ts (lúc chạy ứng dụng).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPING
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  COD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum ShippingZone {
+  HANOI_INNER
+  NORTH
+  CENTRAL_SOUTH
+}
+
+// ---------- Tài khoản và đăng nhập (Better Auth) ----------
+
+model User {
+  id                 String               @id
+  name               String
+  email              String               @unique
+  emailVerified      Boolean              @default(false)
+  image              String?
+  role               UserRole             @default(ADMIN)
+  mustChangePassword Boolean              @default(true)
+  lastLoginAt        DateTime?
+  sessions           Session[]
+  accounts           Account[]
+  statusChanges      OrderStatusHistory[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ---------- Danh mục, bộ sưu tập ----------
+
+model Category {
+  id             String     @id @default(cuid())
+  name           String
+  slug           String     @unique
+  description    String?
+  imagePublicId  String?
+  parentId       String?
+  parent         Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children       Category[] @relation("CategoryTree")
+  sortOrder      Int        @default(0)
+  isActive       Boolean    @default(true)
+  seoTitle       String?
+  seoDescription String?
+  products       Product[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Collection {
+  id            String              @id @default(cuid())
+  name          String
+  slug          String              @unique
+  description   String?
+  imagePublicId String?
+  isActive      Boolean             @default(true)
+  showOnHome    Boolean             @default(false)
+  sortOrder     Int                 @default(0)
+  products      ProductCollection[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+// ---------- Sản phẩm ----------
+
+model Product {
+  id               String              @id @default(cuid())
+  name             String
+  slug             String              @unique
+  categoryId       String
+  category         Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  shortDescription String?
+  description      String?
+  material         String?
+  careInstructions String?
+  status           ProductStatus       @default(DRAFT)
+  isFeatured       Boolean             @default(false)
+  priceFrom        Int                 @default(0)
+  searchText       String              @default("")
+  seoTitle         String?
+  seoDescription   String?
+  publishedAt      DateTime?
+  archivedAt       DateTime?
+  variants         ProductVariant[]
+  images           ProductImage[]
+  collections      ProductCollection[]
+  orderItems       OrderItem[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([status, categoryId])
+  @@index([status, isFeatured])
+  @@index([status, priceFrom])
+  @@index([status, publishedAt])
+  // Tìm kiếm tiếng Việt không dấu. Cần extension pg_trgm (tạo ở đầu migration đầu tiên).
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "product_search_trgm")
+}
+
+model ProductVariant {
+  id             String         @id @default(cuid())
+  productId      String
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku            String         @unique
+  colorName      String         @default("")
+  colorHex       String?
+  size           String         @default("")
+  price          Int
+  compareAtPrice Int?
+  stockQuantity  Int            @default(0)
+  isActive       Boolean        @default(true)
+  sortOrder      Int            @default(0)
+  images         ProductImage[]
+  orderItems     OrderItem[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([productId, colorName, size])
+  @@index([productId])
+  @@index([colorName])
+}
+
+model ProductImage {
+  id        String          @id @default(cuid())
+  productId String
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  publicId  String
+  alt       String
+  width     Int
+  height    Int
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+
+  @@index([productId, sortOrder])
+}
+
+model ProductCollection {
+  productId    String
+  collectionId String
+  sortOrder    Int        @default(0)
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+}
+
+// ---------- Đơn hàng ----------
+
+model Order {
+  id                    String               @id @default(cuid())
+  code                  String               @unique
+  status                OrderStatus          @default(PENDING)
+  paymentMethod         PaymentMethod
+  paymentStatus         PaymentStatus        @default(UNPAID)
+
+  customerName          String
+  customerPhone         String
+  customerEmail         String?
+
+  recipientName         String
+  recipientPhone        String
+  provinceCode          String
+  provinceName          String
+  wardCode              String
+  wardName              String
+  addressLine           String
+  shippingZone          ShippingZone
+
+  isGift                Boolean              @default(false)
+  giftMessage           String?
+  giftWrap              Boolean              @default(false)
+  preferredDeliveryDate DateTime?            @db.Date
+  customerNote          String?
+
+  subtotal              Int
+  shippingFee           Int
+  giftWrapFee           Int                  @default(0)
+  discountAmount        Int                  @default(0)
+  total                 Int
+
+  adminNote             String?
+  carrier               String?
+  trackingCode          String?
+  cancelReason          String?
+  paidAt                DateTime?
+  confirmedAt           DateTime?
+  shippedAt             DateTime?
+  deliveredAt           DateTime?
+  cancelledAt           DateTime?
+
+  ipHash                String?
+  items                 OrderItem[]
+  statusHistory         OrderStatusHistory[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@index([customerPhone])
+  @@index([status, createdAt])
+  @@index([paymentStatus, createdAt])
+}
+
+model OrderItem {
+  id            String          @id @default(cuid())
+  orderId       String
+  order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantId     String?
+  variant       ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  productName   String
+  variantLabel  String?
+  sku           String
+  imagePublicId String?
+  unitPrice     Int
+  quantity      Int
+  lineTotal     Int
+
+  @@index([orderId])
+}
+
+model OrderStatusHistory {
+  id          String       @id @default(cuid())
+  orderId     String
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  note        String?
+  changedById String?
+  changedBy   User?        @relation(fields: [changedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// ---------- Chống spam ----------
+
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}

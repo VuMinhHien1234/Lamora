@@ -225,6 +225,12 @@ Nội dung viết bằng Markdown trong `src/content/`, render chung một khung
 
 ---
 
+## Ghi chú triển khai F1 (2026-10-05)
+
+- Khung S0 đã có: thanh thông báo, header (co lại khi cuộn), menu di động, footer, nút chat nổi (ẩn khi chưa điền link trong `src/config/site.ts`).
+- Chưa làm (để đúng bước): mega menu → B1; gợi ý tìm kiếm → B5; giỏ nhỏ (drawer) → F4. Hiện biểu tượng giỏ chỉ hiển thị số lượng từ kho giỏ hàng (localStorage).
+- Thông tin liên hệ trong `src/config/site.ts` đang là giá trị tạm, chủ shop cần điền thật.
+
 ## Nhật ký thay đổi
 
 | Phiên bản | Ngày | Thay đổi |

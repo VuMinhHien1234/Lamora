@@ -125,7 +125,7 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
 - [ ] **A7** Better Auth: đăng nhập admin, tắt đăng ký, `proxy.ts`, `requireAdmin()`, bắt đổi mật khẩu lần đầu
 
 ### Giai đoạn 2 — Giao diện nền + quản trị sản phẩm
-- [ ] **G1 + F1** Token `03` mục 2–4, font, component `03` mục 7, trang `/admin/ui-kit`, khung admin (M0), đăng nhập (M1), đổi mật khẩu (M10), khung shop (S0) + kho giỏ hàng
+- [x] **G1 + F1** (đã code, ⏸ chờ chủ shop duyệt `/admin/ui-kit`) Token `03` mục 2–4, font, component `03` mục 7, trang `/admin/ui-kit`, khung admin (M0), đăng nhập (M1), đổi mật khẩu (M10), khung shop (S0) + kho giỏ hàng
   → ⏸ **Dừng, chờ chủ shop duyệt `/admin/ui-kit`** trên điện thoại và máy tính trước khi làm tiếp.
 - [ ] **B1 → G2** Danh mục: backend rồi màn hình M7
 - [ ] **B3 → G3** Sản phẩm admin: backend rồi M5, M6 (thông tin chung, biến thể)
@@ -313,3 +313,4 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1.0 | 2026-10-05 | Bản đầu tiên |
+| v1.2 | 2026-10-05 | Xong G1+F1: token, component, ui-kit, khung admin/shop, đăng nhập, đổi mật khẩu, kho giỏ hàng. Chờ duyệt ui-kit |

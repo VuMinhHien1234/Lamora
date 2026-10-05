@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma Client sinh tự động (pnpm install / pnpm db:generate)
+/src/generated
+/_to_delete

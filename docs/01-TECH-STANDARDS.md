@@ -84,7 +84,7 @@ PostgreSQL (Neon) · Cloudinary · Telegram
 | Từ | Được import | KHÔNG ĐƯỢC import |
 |---|---|---|
 | `app/` | `features/*` (qua `index.ts`), `components/`, `lib/`, `config/` | Prisma trực tiếp, `repository.ts` |
-| `features/X/components` | `features/X/*`, `components/`, `lib/` | `repository.ts`, `service.ts` (dùng `queries.ts` thay thế), Prisma |
+| `features/X/components` | `features/X/*`, `components/`, `lib/` | `repository.ts`, `service.ts` (trừ server component), Prisma |
 | `features/X/actions.ts` | `service.ts`, `schema.ts` của X, `lib/` | Prisma, `repository.ts` |
 | `features/X/queries.ts` | `service.ts` của X, `lib/` | Prisma, `repository.ts`, `next/navigation` (trừ `notFound`) |
 | `features/X/service.ts` | `repository.ts` của X, `index.ts` của feature khác, `lib/` | `next/*`, React, Prisma |
@@ -236,7 +236,7 @@ Text hiển thị cho khách là tiếng Việt. Comment trong code NÊN viết 
 - KHÔNG ĐƯỢC dùng `any`. Dữ liệu chưa rõ kiểu dùng `unknown` rồi kiểm tra bằng Zod.
 - KHÔNG ĐƯỢC dùng `@ts-ignore`. Nếu bất khả kháng dùng `@ts-expect-error` kèm lý do.
 - KHÔNG ĐƯỢC dùng `!` (non-null assertion) để né lỗi.
-- Hàm được export PHẢI khai báo kiểu trả về (ESLint ép cho `src/lib` và `actions/queries/service/repository` `.ts`; component `.tsx` được suy luận).
+- Hàm được export PHẢI khai báo kiểu trả về.
 - Dùng import alias `@/` thay cho `../../..`.
 - Ưu tiên `type` hơn `interface`, trừ khi cần mở rộng.
 

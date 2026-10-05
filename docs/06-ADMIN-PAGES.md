@@ -198,6 +198,13 @@ G1–G4 nên làm **trước** phần web khách, để bạn nhập được s�
 
 ---
 
+## Ghi chú triển khai G1 (2026-10-05)
+
+- Đã có: khung admin M0 (menu bên / menu trượt trên điện thoại), M1 đăng nhập, M10 đổi mật khẩu (bắt buộc lần đầu), trang `/admin/ui-kit`.
+- Mục menu chưa có màn hình hiện "Sắp có" (cấu hình ở `src/config/admin-nav.ts`, đổi `ready` khi làm xong).
+- Hoãn: DataTable và Combobox, sẽ làm cùng màn hình đầu tiên cần tới (G2/G3).
+- Layout admin không chạy lại khi chuyển trang trong admin, nên mọi query/action vẫn tự gọi `requireAdmin()`.
+
 ## Nhật ký thay đổi
 
 | Phiên bản | Ngày | Thay đổi |
