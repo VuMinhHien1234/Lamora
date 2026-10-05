@@ -105,6 +105,7 @@ Quy tắc: đăng nhập sai 5 lần trong 15 phút → khóa thêm 15 phút (đ
 - `rebuildSearchText(productId)` → tên + danh mục + màu, bỏ dấu, chữ thường.
 - `generateSku(product, variant)` khi SKU trống.
 - Làm mới cache tag `products` và `product:<id>`.
+- Quy ước đã triển khai (3a): SKU tự sinh dạng `LMR-<chữ cái đầu tên>-<màu>-<cỡ>` (trùng thì thêm `-2`, `-3`). `upsertVariants`: biến thể bị bỏ khỏi danh sách sẽ **tắt** nếu đã có trong đơn hàng, **xóa** nếu chưa; sản phẩm đang bán không được tắt hết biến thể. `priceFrom` chỉ tính biến thể đang bán. Ngưỡng sắp hết hàng (≤ 3) ở `src/config/inventory.ts`.
 
 ---
 

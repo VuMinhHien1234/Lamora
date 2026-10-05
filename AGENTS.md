@@ -129,6 +129,9 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
   → ⏸ **Dừng, chờ chủ shop duyệt `/admin/ui-kit`** trên điện thoại và máy tính trước khi làm tiếp.
 - [x] **B1 → G2** Danh mục: backend rồi màn hình M7
 - [ ] **B3 → G3** Sản phẩm admin: backend rồi M5, M6 (thông tin chung, biến thể)
+  - [x] **3a** backend `product` (tạo/sửa, biến thể, trạng thái, danh sách admin) + test
+  - [ ] **3b** M5 danh sách sản phẩm
+  - [ ] **3c** M6 form thêm/sửa + bảng biến thể
 - [ ] **B4 → G4** `media` + ảnh sản phẩm trong M6
 - [ ] **B2 → G5** Bộ sưu tập: backend rồi M8, M9
 
@@ -315,3 +318,4 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.0 | 2026-10-05 | Bản đầu tiên |
 | v1.2 | 2026-10-05 | Xong G1+F1: token, component, ui-kit, khung admin/shop, đăng nhập, đổi mật khẩu, kho giỏ hàng. Chờ duyệt ui-kit |
 | v1.3 | 2026-10-05 | Xong B1→G2 (Danh mục). Thêm component Switch. Sắp xếp bằng nút ↑↓ thay vì kéo-thả |
+| v1.4 | 2026-10-06 | Chia B3→G3 thành 3a/3b/3c. Xong 3a: backend sản phẩm và biến thể |
