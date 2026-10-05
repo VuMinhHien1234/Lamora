@@ -138,8 +138,8 @@ Một trang duy nhất, thêm/sửa trong hộp thoại.
 
 | Thành phần | Mô tả | API |
 |---|---|---|
-| `CategoryTree` | Danh sách dạng cây (1 cấp con), kéo để sắp xếp, số sản phẩm mỗi danh mục, công tắc bật/tắt | `adminListCategories`, `reorderCategories` |
-| `CategoryFormDialog` | Tên*, Slug, Danh mục cha, Mô tả, Ảnh (`ImageUploader` một ảnh), SEO | `createCategory`, `updateCategory`, `getImageUploadSignature({ folder: 'categories' })` |
+| `CategoryTree` | Danh sách dạng cây (1 cấp con), nút ↑↓ để sắp xếp (thay cho kéo-thả vì kéo-thả không dùng được trên điện thoại và cần thêm thư viện), số sản phẩm mỗi danh mục, công tắc bật/tắt | `adminListCategories`, `reorderCategories` |
+| `CategoryFormDialog` | Tên*, Slug, Danh mục cha, Mô tả, Ảnh (`ImageUploader` một ảnh — làm ở G4), SEO | `createCategory`, `updateCategory`, `getImageUploadSignature({ folder: 'categories' })` |
 | Xóa | Chỉ cho xóa khi rỗng; nếu không thì báo số sản phẩm còn lại | `deleteCategory` |
 
 ---

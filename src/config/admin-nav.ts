@@ -9,7 +9,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Tổng quan", href: "/admin", ready: true },
   { label: "Đơn hàng", href: "/admin/don-hang", ready: false },
   { label: "Sản phẩm", href: "/admin/san-pham", ready: false },
-  { label: "Danh mục", href: "/admin/danh-muc", ready: false },
+  { label: "Danh mục", href: "/admin/danh-muc", ready: true },
   { label: "Bộ sưu tập", href: "/admin/bo-suu-tap", ready: false },
   { label: "Tài khoản", href: "/admin/tai-khoan", ready: true },
   { label: "Bộ component", href: "/admin/ui-kit", ready: true },

@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { KitSection } from "./kit-section";
 
 export function KitForms() {
+  const [on, setOn] = useState(true);
   return (
     <KitSection
       id="form"
@@ -32,6 +37,7 @@ export function KitForms() {
           <option>Hồ Chí Minh</option>
         </Select>
         <Textarea label="Lời nhắn thiệp" hint="Tối đa 300 ký tự" rows={3} />
+        <Switch checked={on} onChange={setOn} label="Hiển thị trên website" />
       </div>
     </KitSection>
   );

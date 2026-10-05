@@ -239,6 +239,8 @@ Trong lúc chưa có logo chính thức:
 - `Combobox` (chọn tỉnh/xã): có ô tìm kiếm không dấu (“ha noi” tìm được “Hà Nội”).
 
 ### 7.3 Các component khác
+
+- **`Switch`** — công tắc bật/tắt (`role="switch"`), ô 44×24px bo 2px, nút gạt vuông bo 2px; bật: nền `ink-900`, tắt: nền `sand-200`. Dùng cho “Hiển thị trên website”, “Đây là quà tặng”. Có trong `/admin/ui-kit`.
 | Component | Mô tả ngắn |
 |---|---|
 | `Price` | Giá hiện tại (`price`, `ink-900`); giá gốc gạch ngang (`small`, `stone-500`); nếu giảm giá thì giá hiện tại màu `rose-700` |
