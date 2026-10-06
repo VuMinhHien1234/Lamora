@@ -238,3 +238,5 @@ Nội dung viết bằng Markdown trong `src/content/`, render chung một khung
 | v1.2 | 2026-10-05 | Làm rõ nguồn dữ liệu danh sách; thống nhất cam kết “thiệp lời nhắn miễn phí” |
 | v1.1 | 2026-10-05 | Đổi tab chi tiết sản phẩm sang accordion; thêm ô đồng ý chính sách ở trang thanh toán |
 | v1.0 | 2026-10-05 | Bản đầu tiên |
+
+> Ghi chú F3 (2026-10-06): chưa có phóng to ảnh khi bấm và `MiniCartDrawer` (làm ở F4); nút “Mua ngay” đi tới `/thanh-toan` (trang S8 làm ở F5, tới lúc đó sẽ báo 404). Mô tả sản phẩm hiển thị bằng bộ đọc Markdown nhỏ tự viết (`lib/markdown.ts`), không dùng thư viện ngoài.

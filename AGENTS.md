@@ -136,9 +136,9 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
 - [x] **B2 → G5** Bộ sưu tập: backend rồi M8, M9 (phần khách `listHomeCollections` làm cùng B5/F8)
 
 ### Giai đoạn 3 — Web khách và đặt hàng
-- [ ] **B5 → F2, F3** Query sản phẩm phía khách → thẻ, lưới, S2; chi tiết S6
+- [x] **B5 → F2, F3** Query sản phẩm phía khách → thẻ, lưới, S2; chi tiết S6
   - [x] 5a B5 backend khách (`listProducts`, `getProductBySlug`, `listFeaturedProducts`, `listRelatedProducts`, `searchSuggestions`) + F2 `ProductCard`, `ProductGrid`, S2 `/san-pham`
-  - [ ] 5b F3 S6 chi tiết sản phẩm + thêm vào giỏ
+  - [x] 5b F3 S6 chi tiết sản phẩm + thêm vào giỏ (bộ đọc Markdown tự viết, không thêm thư viện)
 - [ ] **C1** Địa chỉ + phí ship (`07` mục 3)
 - [ ] **C2 → F4** `validateCart` → S7 giỏ hàng + giỏ nhỏ
 - [ ] **C3 → F5** `createOrder` → S8 thanh toán
@@ -326,3 +326,4 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.7 | 2026-10-06 | Xong B4→G4: `media` (chữ ký upload, xóa ảnh), `ImageUploader`, khối ảnh trong M6, ảnh danh mục. ESLint áp luật lớp cho cả `*service.ts` / `*repository.ts` |
 | v1.8 | 2026-10-06 | Xong B2→G5: backend bộ sưu tập, M8 danh sách, M9 chi tiết + chọn sản phẩm. Thêm `SingleImageField` (media), `adminListProductOptions` (product) |
 | v1.9 | 2026-10-06 | Xong 5a: query sản phẩm phía khách đủ bộ lọc/sắp xếp/phân trang, `ProductCard`, `ProductGrid`, trang `/san-pham` (chưa có bộ lọc trên giao diện, làm ở F7) |
+| v1.10 | 2026-10-06 | Xong F3: trang chi tiết `/san-pham/[slug]` (thư viện ảnh, chọn màu/cỡ/số lượng, thêm vào giỏ, mua ngay, thanh mua dính đáy điện thoại, accordion, sản phẩm liên quan, JSON-LD). `lib/markdown` + `Markdown` tự viết, không cho HTML thô. Hoàn tất B5→F2,F3 |

@@ -8,6 +8,8 @@ export {
   upsertVariants,
 } from "./actions";
 export { ProductCard as ProductCardView } from "./components/product-card";
+export { ProductDetail as ProductDetailView } from "./components/product-detail";
+export { ProductDetailsAccordion } from "./components/product-details-accordion";
 export { ProductGrid } from "./components/product-grid";
 export { ProductEditor } from "./components/product-editor";
 export { ProductListView } from "./components/product-list-view";
@@ -21,6 +23,7 @@ export {
   listRelatedProducts,
   searchSuggestions,
 } from "./queries";
+export { buildProductJsonLd, jsonLdString } from "./shop-seo";
 export type { ShopListQuery } from "./shop-schema";
 export type {
   AvailableColor,
