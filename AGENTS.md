@@ -11,7 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # AGENTS.md — Lamora Flower
 
 > File hướng dẫn cho **AI viết code** (Claude Code, Cursor, Codex, …) trong dự án website bán hoa lụa **Lamora Flower**.
-> Đọc **toàn bộ file này** trước mỗi phiên làm việc. Phiên bản: v1.0 · 2026-10-05 · Dựa trên `docs/00-MASTER-PLAN.md` v0.4.
+> Đọc **toàn bộ file này** trước mỗi phiên làm việc. Phiên bản: v1.12 · 2026-10-05 · Dựa trên `docs/00-MASTER-PLAN.md` v0.4.
 
 ---
 
@@ -139,8 +139,8 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
 - [x] **B5 → F2, F3** Query sản phẩm phía khách → thẻ, lưới, S2; chi tiết S6
   - [x] 5a B5 backend khách (`listProducts`, `getProductBySlug`, `listFeaturedProducts`, `listRelatedProducts`, `searchSuggestions`) + F2 `ProductCard`, `ProductGrid`, S2 `/san-pham`
   - [x] 5b F3 S6 chi tiết sản phẩm + thêm vào giỏ (bộ đọc Markdown tự viết, không thêm thư viện)
-- [ ] **C1** Địa chỉ + phí ship (`07` mục 3)
-- [ ] **C2 → F4** `validateCart` → S7 giỏ hàng + giỏ nhỏ
+- [x] **C1** Địa chỉ + phí ship (`07` mục 3)
+- [x] **C2 → F4** `validateCart` → S7 giỏ hàng + giỏ nhỏ
 - [ ] **C3 → F5** `createOrder` → S8 thanh toán
 - [ ] **C5 → F6** Xác nhận đơn, VietQR (`07` mục 2) → S9
 - [ ] **C7** Telegram đơn mới + đăng nhập admin
@@ -327,3 +327,5 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.8 | 2026-10-06 | Xong B2→G5: backend bộ sưu tập, M8 danh sách, M9 chi tiết + chọn sản phẩm. Thêm `SingleImageField` (media), `adminListProductOptions` (product) |
 | v1.9 | 2026-10-06 | Xong 5a: query sản phẩm phía khách đủ bộ lọc/sắp xếp/phân trang, `ProductCard`, `ProductGrid`, trang `/san-pham` (chưa có bộ lọc trên giao diện, làm ở F7) |
 | v1.10 | 2026-10-06 | Xong F3: trang chi tiết `/san-pham/[slug]` (thư viện ảnh, chọn màu/cỡ/số lượng, thêm vào giỏ, mua ngay, thanh mua dính đáy điện thoại, accordion, sản phẩm liên quan, JSON-LD). `lib/markdown` + `Markdown` tự viết, không cho HTML thô. Hoàn tất B5→F2,F3 |
+| v1.11 | 2026-10-06 | Xong C1: feature `shipping` (vùng, phí, mốc miễn phí, `getAddressOptions`, `quoteShipping`, `resolveAddress`), dữ liệu 34 tỉnh / 3.321 phường-xã trong `src/config/address` (nguồn NSO, ngày 2026-09-20), `config/shipping.ts` đầy đủ |
+| v1.12 | 2026-10-06 | Xong C2→F4: `validateCart` (giá/tồn kho lấy từ DB), trang `/gio-hang` (S7), giỏ nhỏ `MiniCartDrawer`, nút giỏ ở đầu trang và “Thêm vào giỏ” mở giỏ nhỏ |

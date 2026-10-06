@@ -1,15 +1,15 @@
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import Link from "next/link";
-import { useCart } from "@/features/cart";
+import { openMiniCart, useCart } from "@/features/cart";
 
-/** Biểu tượng giỏ hàng kèm số lượng. Ngăn trượt giỏ nhỏ sẽ gắn vào đây ở bước F4. */
+/** Biểu tượng giỏ hàng kèm số lượng; bấm để mở giỏ nhỏ. */
 export function CartButton() {
   const { count } = useCart();
   return (
-    <Link
-      href="/gio-hang"
+    <button
+      type="button"
+      onClick={openMiniCart}
       aria-label={count > 0 ? `Giỏ hàng, ${count} sản phẩm` : "Giỏ hàng"}
       className="relative grid size-11 place-items-center"
     >
@@ -19,6 +19,6 @@ export function CartButton() {
           {count}
         </span>
       )}
-    </Link>
+    </button>
   );
 }

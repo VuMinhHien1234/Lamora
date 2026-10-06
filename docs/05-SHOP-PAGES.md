@@ -240,3 +240,5 @@ Nội dung viết bằng Markdown trong `src/content/`, render chung một khung
 | v1.0 | 2026-10-05 | Bản đầu tiên |
 
 > Ghi chú F3 (2026-10-06): chưa có phóng to ảnh khi bấm và `MiniCartDrawer` (làm ở F4); nút “Mua ngay” đi tới `/thanh-toan` (trang S8 làm ở F5, tới lúc đó sẽ báo 404). Mô tả sản phẩm hiển thị bằng bộ đọc Markdown nhỏ tự viết (`lib/markdown.ts`), không dùng thư viện ngoài.
+
+> Ghi chú F4 (2026-10-06): S7 và `MiniCartDrawer` đã làm. Giỏ kiểm tra lại với server khi mở và sau mỗi lần đổi số lượng (chờ 250ms); nút “Thanh toán” bị khóa khi có dòng hết hàng/ngừng bán hoặc chưa tải xong. Nút “Thêm vào giỏ” mở giỏ nhỏ thay vì hiện thông báo.

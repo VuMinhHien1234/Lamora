@@ -212,3 +212,5 @@ Mở đơn: https://<tên-miền>/admin/don-hang/<id>
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1.0 | 2026-10-05 | Bản đầu tiên |
+
+> Ghi chú C1 (2026-10-06): mã tỉnh là mã NSO 2 chữ số (`01` Hà Nội…), mã phường/xã 5 chữ số. Vùng `NORTH` liệt kê bằng mã trong `config/shipping.ts` (`NORTH_PROVINCE_CODES`), có test đối chiếu tên với bảng ở mục 3.2. Nguồn dữ liệu địa chỉ ghi ở `src/config/address/README.md`. `resolveAddress(provinceCode, wardCode)` kiểm tra phường/xã đúng tỉnh và trả tên đầy đủ để `createOrder` chụp vào đơn.

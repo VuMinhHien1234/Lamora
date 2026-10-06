@@ -3,6 +3,7 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { ChatFloatingButtons } from "@/components/layout/chat-buttons";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { MiniCartDrawer } from "@/features/cart";
 
 // Khung chung của web khách (S0, docs/05 mục 2).
 export default function ShopLayout({ children }: { children: ReactNode }) {
@@ -13,6 +14,7 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       <main>{children}</main>
       <SiteFooter />
       <ChatFloatingButtons />
+      <MiniCartDrawer />
     </>
   );
 }

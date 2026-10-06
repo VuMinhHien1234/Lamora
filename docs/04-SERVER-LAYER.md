@@ -125,7 +125,7 @@ Giỏ hàng lưu ở trình duyệt dạng `[{ variantId, quantity }]`.
 
 | # | Tên | Loại | Quyền | Input | Output / Ghi chú |
 |---|---|---|---|---|---|
-| 1 | `validateCart` | A | 🌐 | `items[]` (≤ 30 dòng, quantity 1–99) | `{ lines: [{ variantId, productName, variantLabel, imageUrl, unitPrice, quantity, lineTotal, available, maxQuantity }], subtotal, warnings[] }`. Giá **lấy từ DB**. Cảnh báo khi: sản phẩm ngừng bán, hết hàng, không đủ số lượng, giá thay đổi |
+| 1 | `validateCart` | A | 🌐 | `items[]` (≤ 30 dòng, quantity 1–99) | `{ lines: [{ variantId, productName, variantLabel, imageUrl, unitPrice, quantity, lineTotal, available, maxQuantity }], subtotal, warnings[] }`. Giá **lấy từ DB**. Cảnh báo khi: sản phẩm ngừng bán, hết hàng, không đủ số lượng. Mỗi dòng có thêm `productSlug`. (Cảnh báo “giá thay đổi” chưa làm: giỏ ở trình duyệt không lưu giá, nên luôn hiển thị giá hiện tại.) |
 
 ---
 

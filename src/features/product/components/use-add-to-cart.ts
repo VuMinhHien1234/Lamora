@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCart } from "@/features/cart";
-import { useToast } from "@/components/ui/toast";
+import { openMiniCart, useCart } from "@/features/cart";
 import type { ProductSelection } from "./use-product-selection";
 
 const CHECKOUT_PATH = "/thanh-toan";
@@ -10,7 +9,6 @@ const CHECKOUT_PATH = "/thanh-toan";
 /** Thêm biến thể đang chọn vào giỏ (lưu ở trình duyệt), hoặc "Mua ngay" → sang trang thanh toán. */
 export function useAddToCart(selection: ProductSelection) {
   const cart = useCart();
-  const toast = useToast();
   const router = useRouter();
   const { variant, quantity } = selection;
   const canBuy = variant !== null && variant.stockQuantity > 0;
@@ -24,7 +22,7 @@ export function useAddToCart(selection: ProductSelection) {
   return {
     canBuy,
     add: (): void => {
-      if (addToCart()) toast("Đã thêm vào giỏ hàng");
+      if (addToCart()) openMiniCart();
     },
     buyNow: (): void => {
       if (addToCart()) router.push(CHECKOUT_PATH);
