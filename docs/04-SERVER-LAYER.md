@@ -202,6 +202,8 @@ Bảng phí mặc định trong `src/config/shipping.ts`:
    6. Trừ `stockQuantity` từng variant.
 5. Sau transaction (lỗi ở đây **không** làm hỏng đơn): gửi Telegram, đặt cookie xác nhận đơn, `revalidateTag` sản phẩm liên quan.
 
+> Ghi chú C3 (2026-10-06): lỗi `CART_INVALID` trả danh sách dòng lỗi trong `fieldErrors`, khóa là `variantId`, giá trị là câu thông báo. Giỏ trống báo `VALIDATION_ERROR` (mã `CART_EMPTY` chưa dùng). Gói quà và lời nhắn chỉ có hiệu lực khi `isGift = true`. Số điện thoại chấp nhận `+84`/`84`/dấu cách và luôn lưu dạng `0xxxxxxxxx`. Chống spam đếm theo `ipHash` trên bảng `Order`. Bước 5 (Telegram, cookie xác nhận) làm ở C7 và C5. Các trang sản phẩm đang tải động nên chưa cần `revalidateTag`.
+
 **Mã lỗi:** `VALIDATION_ERROR` · `TOO_MANY_ORDERS` · `CART_EMPTY` · `CART_INVALID` · `INVALID_ADDRESS` · `INTERNAL_ERROR`
 
 ---

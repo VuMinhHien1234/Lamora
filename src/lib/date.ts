@@ -11,3 +11,11 @@ const dateFormat = new Intl.DateTimeFormat("vi-VN", {
 export function formatDate(date: Date): string {
   return dateFormat.format(date);
 }
+
+const VN_OFFSET_MS = 7 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Ngày theo giờ Việt Nam dạng "YYYY-MM-DD", cộng thêm `addDays` ngày. */
+export function vnDateString(now: Date, addDays = 0): string {
+  return new Date(now.getTime() + VN_OFFSET_MS + addDays * DAY_MS).toISOString().slice(0, 10);
+}
