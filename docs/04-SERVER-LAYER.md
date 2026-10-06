@@ -64,7 +64,7 @@ Quy tắc: đăng nhập sai 5 lần trong 15 phút → khóa thêm 15 phút (đ
 
 | # | Tên | Loại | Quyền | Input | Output / Ghi chú |
 |---|---|---|---|---|---|
-| 1 | `listHomeCollections` | Q | 🌐 | — | Bộ sưu tập `showOnHome`, kèm tối đa 8 sản phẩm ACTIVE mỗi bộ |
+| 1 | `listHomeCollections` | Q | 🌐 | — | Bộ sưu tập `showOnHome`, kèm tối đa 8 sản phẩm ACTIVE mỗi bộ. *(Làm cùng B5/F8, chưa có.)* |
 | 2 | `getCollectionBySlug` | Q | 🌐 | `slug` | Thông tin bộ sưu tập + SEO; không có → 404. Danh sách sản phẩm lấy qua `listProducts({ collectionSlug })` |
 | 3 | `adminListCollections` | Q | 🔐 | — | Tất cả + số sản phẩm |
 | 4 | `createCollection` | A | 🔐 | `name`, `slug?`, `description?`, `imagePublicId?`, `isActive`, `showOnHome` | Collection |
@@ -317,3 +317,5 @@ Sau giai đoạn C, backend P0 hoàn tất. Giao diện (`05`, `06`) được l�
 | v1.2 | 2026-10-05 | Đăng nhập theo Better Auth; thêm feature `media` (chữ ký upload dùng chung); `getCollectionBySlug` chỉ trả thông tin bộ sưu tập; thêm `notifyAdminLogin`, mã lỗi `PASSWORD_CHANGE_REQUIRED`; query đặt trong `queries.ts` |
 | v1.1 | 2026-10-05 | Nội dung chuyển khoản bỏ dấu gạch; tùy chọn hoàn tiền khi hủy; thêm route `/api/cron/*`; giới hạn tần suất dùng `RateLimitHit` |
 | v1.0 | 2026-10-05 | Bản đầu tiên |
+
+> Ghi chú B2: `adminGetCollection(id)` trả bộ sưu tập kèm danh sách sản phẩm theo thứ tự; `product` có thêm `adminListProductOptions()` (🔐, tối đa 500 sản phẩm gọn, kể cả nháp) cho ô chọn sản phẩm. `setCollectionProducts` bỏ trùng, từ chối sản phẩm không tồn tại (`NOT_FOUND`).

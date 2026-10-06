@@ -5,3 +5,4 @@ export type { UploadFolder, UploadSignature } from "./schema";
 export { deleteImage, isShopPublicId } from "./service";
 export { ImageUploader } from "./components/image-uploader";
 export type { UploadedImage } from "./types";
+export { SingleImageField } from "./components/single-image-field";

@@ -1,8 +1,9 @@
 import { requireAdmin } from "@/features/auth";
 import { cloudinaryUrl } from "@/lib/cloudinary";
 import { listProductsSchema } from "./schema";
+import { listProductOptions } from "./options-service";
 import * as service from "./service";
-import type { ProductDetail, ProductListResult } from "./types";
+import type { ProductDetail, ProductListResult, ProductOption } from "./types";
 
 /** 🔐 Bảng sản phẩm. `input` là query string thô từ URL; lỗi định dạng thì dùng giá trị mặc định. */
 export async function adminListProducts(input: unknown): Promise<ProductListResult> {
@@ -22,4 +23,14 @@ export async function adminGetProduct(id: string): Promise<ProductDetail> {
       previewUrl: cloudinaryUrl(image.publicId, { width: 240 }),
     })),
   };
+}
+
+/** 🔐 Danh sách gọn mọi sản phẩm, để chọn vào bộ sưu tập. */
+export async function adminListProductOptions(): Promise<ProductOption[]> {
+  await requireAdmin();
+  const rows = await listProductOptions();
+  return rows.map(({ imagePublicId, ...rest }) => ({
+    ...rest,
+    previewUrl: imagePublicId ? cloudinaryUrl(imagePublicId, { width: 96 }) : null,
+  }));
 }

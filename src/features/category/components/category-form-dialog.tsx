@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { CategoryImageField } from "./category-image-field";
+import { SingleImageField } from "@/features/media";
 import { useToast } from "@/components/ui/toast";
 import { createCategory, updateCategory } from "../actions";
 import type { CategoryWithCount } from "../types";
@@ -134,7 +134,9 @@ function SeoFields({ editing, errors }: Pick<FieldsProps, "editing" | "errors">)
 function ImageField({ editing, imagePublicId, onImageChange }: FieldsProps) {
   const unchanged = imagePublicId === (editing?.imagePublicId ?? null);
   return (
-    <CategoryImageField
+    <SingleImageField
+      folder="categories"
+      label="Ảnh danh mục"
       publicId={imagePublicId}
       previewUrl={unchanged ? (editing?.imagePreviewUrl ?? null) : null}
       onChange={onImageChange}

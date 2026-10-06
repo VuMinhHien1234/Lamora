@@ -133,7 +133,7 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
   - [x] **3b** M5 danh sách sản phẩm
   - [x] **3c** M6 form thêm/sửa + bảng biến thể (ảnh → G4, bộ sưu tập → G5, xem trước Markdown → F3)
 - [x] **B4 → G4** `media` + ảnh sản phẩm trong M6 (4a backend ảnh ✅ · 4b `ImageUploader` + khối ảnh M6 ✅ · 4c ảnh danh mục + dọn ảnh trên Cloudinary ✅)
-- [ ] **B2 → G5** Bộ sưu tập: backend rồi M8, M9
+- [x] **B2 → G5** Bộ sưu tập: backend rồi M8, M9 (phần khách `listHomeCollections` làm cùng B5/F8)
 
 ### Giai đoạn 3 — Web khách và đặt hàng
 - [ ] **B5 → F2, F3** Query sản phẩm phía khách → thẻ, lưới, S2; chi tiết S6
@@ -322,3 +322,4 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.5 | 2026-10-06 | Xong 3b: M5 danh sách sản phẩm. Thêm component Pagination, `lib/cloudinary`, `lib/date` |
 | v1.6 | 2026-10-06 | Xong 3c: M6 form sản phẩm (thông tin chung, biến thể, SEO, khung đăng bán). Hoàn tất B3→G3 |
 | v1.7 | 2026-10-06 | Xong B4→G4: `media` (chữ ký upload, xóa ảnh), `ImageUploader`, khối ảnh trong M6, ảnh danh mục. ESLint áp luật lớp cho cả `*service.ts` / `*repository.ts` |
+| v1.8 | 2026-10-06 | Xong B2→G5: backend bộ sưu tập, M8 danh sách, M9 chi tiết + chọn sản phẩm. Thêm `SingleImageField` (media), `adminListProductOptions` (product) |

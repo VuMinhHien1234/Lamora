@@ -143,3 +143,11 @@ export type StatusChange = {
 
 /** Giá trị tính lại sau khi biến thể thay đổi. */
 export type DerivedFields = { priceFrom: number; searchText: string };
+
+/** Một sản phẩm trong danh sách chọn (bộ sưu tập). */
+export type ProductOption = {
+  id: string;
+  name: string;
+  status: ProductStatus;
+  previewUrl: string | null;
+};
