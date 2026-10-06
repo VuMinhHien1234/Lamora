@@ -24,6 +24,8 @@ export type ProductImageRecord = {
   height: number;
   sortOrder: number;
   variantId: string | null;
+  /** Ảnh xem trước 4:5, server tính sẵn (component trình duyệt không đọc được cấu hình Cloudinary). */
+  previewUrl?: string | null;
 };
 
 export type ProductRecord = {

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { CategoryImageField } from "./category-image-field";
 import { useToast } from "@/components/ui/toast";
 import { createCategory, updateCategory } from "../actions";
 import type { CategoryWithCount } from "../types";
@@ -45,6 +46,7 @@ function useCategoryForm(props: DialogProps) {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(editing?.isActive ?? true);
+  const [imagePublicId, setImagePublicId] = useState<string | null>(editing?.imagePublicId ?? null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -52,7 +54,7 @@ function useCategoryForm(props: DialogProps) {
     setErrors({});
     const body = {
       ...readForm(new FormData(event.currentTarget), isActive),
-      imagePublicId: editing?.imagePublicId ?? "",
+      imagePublicId: imagePublicId ?? "",
     };
     const result = editing
       ? await updateCategory({ ...body, id: editing.id })
@@ -67,7 +69,7 @@ function useCategoryForm(props: DialogProps) {
     onClose();
   }
 
-  return { errors, loading, isActive, setIsActive, onSubmit };
+  return { errors, loading, isActive, setIsActive, imagePublicId, setImagePublicId, onSubmit };
 }
 
 type FieldsProps = {
@@ -77,6 +79,8 @@ type FieldsProps = {
   errors: FieldErrors;
   isActive: boolean;
   onActiveChange: (value: boolean) => void;
+  imagePublicId: string | null;
+  onImageChange: (publicId: string | null) => void;
 };
 
 function ParentSelect(props: FieldsProps & { error?: string }) {
@@ -127,6 +131,17 @@ function SeoFields({ editing, errors }: Pick<FieldsProps, "editing" | "errors">)
   );
 }
 
+function ImageField({ editing, imagePublicId, onImageChange }: FieldsProps) {
+  const unchanged = imagePublicId === (editing?.imagePublicId ?? null);
+  return (
+    <CategoryImageField
+      publicId={imagePublicId}
+      previewUrl={unchanged ? (editing?.imagePreviewUrl ?? null) : null}
+      onChange={onImageChange}
+    />
+  );
+}
+
 function CategoryFormFields(props: FieldsProps) {
   const { editing, errors } = props;
   const first = (key: string): string | undefined => errors[key]?.[0];
@@ -160,6 +175,7 @@ function CategoryFormFields(props: FieldsProps) {
         onChange={props.onActiveChange}
         label="Hiển thị trên website"
       />
+      <ImageField {...props} />
       <SeoFields editing={editing} errors={errors} />
       {first("_form") && (
         <p role="alert" className="type-small text-error-700">
@@ -172,7 +188,8 @@ function CategoryFormFields(props: FieldsProps) {
 
 function CategoryForm(props: DialogProps) {
   const { editing, parentOptions, hasChildren, onClose } = props;
-  const { errors, loading, isActive, setIsActive, onSubmit } = useCategoryForm(props);
+  const { errors, loading, isActive, setIsActive, imagePublicId, setImagePublicId, onSubmit } =
+    useCategoryForm(props);
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5 p-5">
       <CategoryFormFields
@@ -182,6 +199,8 @@ function CategoryForm(props: DialogProps) {
         errors={errors}
         isActive={isActive}
         onActiveChange={setIsActive}
+        imagePublicId={imagePublicId}
+        onImageChange={setImagePublicId}
       />
       <div className="flex gap-3">
         <Button type="submit" variant="primary" loading={loading}>

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as media from "@/features/media";
 import { AppError } from "@/lib/errors";
 import * as repo from "./repository";
 import {
@@ -13,6 +14,10 @@ import {
 } from "./service";
 import type { CategoryRecord, CategoryWithCount } from "./types";
 
+vi.mock("@/features/media", () => ({
+  isShopPublicId: (id: string) => id.startsWith("lamora/categories/"),
+  deleteImage: vi.fn(),
+}));
 vi.mock("./repository", () => ({
   findAllWithCount: vi.fn(),
   findById: vi.fn(),
@@ -146,6 +151,36 @@ describe("updateCategory", () => {
     vi.mocked(repo.findById).mockResolvedValue(current);
     vi.mocked(repo.slugExists).mockResolvedValue(true);
     expect(await codeOf(updateCategory("a", { ...input, slug: "moi" }))).toBe("CONFLICT");
+  });
+});
+
+describe("ảnh danh mục", () => {
+  const withImage = { ...row({ id: "a" }), imagePublicId: "lamora/categories/old" };
+
+  it("từ chối ảnh ngoài thư mục danh mục", async () => {
+    vi.mocked(repo.findById).mockResolvedValue(withImage);
+    expect(
+      await codeOf(updateCategory("a", { ...input, imagePublicId: "lamora/products/x" })),
+    ).toBe("VALIDATION_ERROR");
+  });
+
+  it("đổi ảnh thì xóa ảnh cũ trên Cloudinary", async () => {
+    vi.mocked(repo.findById).mockResolvedValue(withImage);
+    vi.mocked(repo.updateById).mockImplementation(async (id, data) => ({
+      id,
+      sortOrder: 0,
+      ...data,
+    }));
+    await updateCategory("a", { ...input, imagePublicId: "lamora/categories/new" });
+    expect(media.deleteImage).toHaveBeenCalledWith("lamora/categories/old");
+  });
+
+  it("xóa danh mục thì xóa luôn ảnh", async () => {
+    vi.mocked(repo.findById).mockResolvedValue(withImage);
+    vi.mocked(repo.countProducts).mockResolvedValue(0);
+    vi.mocked(repo.countChildren).mockResolvedValue(0);
+    await deleteCategory("a");
+    expect(media.deleteImage).toHaveBeenCalledWith("lamora/categories/old");
   });
 });
 

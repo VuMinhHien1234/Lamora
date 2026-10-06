@@ -9,6 +9,8 @@ import {
   updateProductSchema,
   upsertVariantsSchema,
 } from "./schema";
+import { saveProductImagesSchema, updateProductImagesSchema } from "./image-schema";
+import * as images from "./image-service";
 import * as service from "./service";
 import type { ProductStatus } from "./types";
 
@@ -61,6 +63,30 @@ export async function setProductStatus(
     const updated = await service.setProductStatus(id, status as ProductStatus);
     refresh(id);
     return ok({ status: updated.status });
+  } catch (error) {
+    return toErrorResult(error);
+  }
+}
+
+export async function saveProductImages(input: unknown): Promise<ActionResult<null>> {
+  try {
+    await requireAdmin();
+    const parsed = saveProductImagesSchema.parse(input);
+    await images.saveProductImages(parsed);
+    refresh(parsed.productId);
+    return ok(null);
+  } catch (error) {
+    return toErrorResult(error);
+  }
+}
+
+export async function updateProductImages(input: unknown): Promise<ActionResult<null>> {
+  try {
+    await requireAdmin();
+    const parsed = updateProductImagesSchema.parse(input);
+    await images.updateProductImages(parsed);
+    refresh(parsed.productId);
+    return ok(null);
   } catch (error) {
     return toErrorResult(error);
   }

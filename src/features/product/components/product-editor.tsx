@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { ProductDetail } from "../types";
 import { EditorSection } from "./editor-section";
+import { ImagesEditor } from "./images-editor";
 import { GeneralFields } from "./general-fields";
 import type { GeneralValues } from "./general-form";
 import type { CategoryOption } from "./product-filters";
@@ -37,22 +38,11 @@ function SaveBar({ title, dirty, saving }: { title: string; dirty: boolean; savi
   );
 }
 
-function PlaceholderBlocks() {
+function CollectionsPlaceholder() {
   return (
-    <>
-      <EditorSection
-        title="Ảnh sản phẩm"
-        description="Tải ảnh, sắp xếp, gắn với màu — sẽ có ở bước kế tiếp (G4). Cần ít nhất 1 ảnh mới đăng bán được."
-      >
-        <p className="type-small text-stone-500">Chưa khả dụng.</p>
-      </EditorSection>
-      <EditorSection
-        title="Bộ sưu tập"
-        description="Chọn bộ sưu tập cho sản phẩm — sẽ có ở bước G5."
-      >
-        <p className="type-small text-stone-500">Chưa khả dụng.</p>
-      </EditorSection>
-    </>
+    <EditorSection title="Bộ sưu tập" description="Chọn bộ sưu tập cho sản phẩm — sẽ có ở bước G5.">
+      <p className="type-small text-stone-500">Chưa khả dụng.</p>
+    </EditorSection>
   );
 }
 
@@ -83,7 +73,15 @@ function EditorBody({ product, categories, editor }: BodyProps) {
           onChange={editor.setRows}
         />
       </EditorSection>
-      {product && <PlaceholderBlocks />}
+      {product && (
+        <EditorSection
+          title="Ảnh sản phẩm"
+          description="Ảnh đầu tiên là ảnh bìa. Cần ít nhất 1 ảnh mới đăng bán được. Ảnh được lưu riêng, không cần bấm Lưu ở đầu trang."
+        >
+          <ImagesEditor key={product.images.map((image) => image.id).join(",")} product={product} />
+        </EditorSection>
+      )}
+      {product && <CollectionsPlaceholder />}
       <EditorSection title="SEO">
         <SeoFields values={editor.general} errors={editor.errors.general} onChange={patchGeneral} />
       </EditorSection>

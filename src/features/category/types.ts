@@ -5,6 +5,8 @@ export type CategoryRecord = {
   slug: string;
   description: string | null;
   imagePublicId: string | null;
+  /** Địa chỉ ảnh xem trước, server tính sẵn để component trình duyệt không cần biết cấu hình Cloudinary. */
+  imagePreviewUrl?: string | null;
   parentId: string | null;
   sortOrder: number;
   isActive: boolean;

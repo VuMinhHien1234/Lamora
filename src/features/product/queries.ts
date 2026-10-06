@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/features/auth";
+import { cloudinaryUrl } from "@/lib/cloudinary";
 import { listProductsSchema } from "./schema";
 import * as service from "./service";
 import type { ProductDetail, ProductListResult } from "./types";
@@ -13,5 +14,12 @@ export async function adminListProducts(input: unknown): Promise<ProductListResu
 /** 🔐 Một sản phẩm đầy đủ (kể cả nháp / lưu trữ). Không có thì ném NOT_FOUND. */
 export async function adminGetProduct(id: string): Promise<ProductDetail> {
   await requireAdmin();
-  return service.getAdminProduct(id);
+  const product = await service.getAdminProduct(id);
+  return {
+    ...product,
+    images: product.images.map((image) => ({
+      ...image,
+      previewUrl: cloudinaryUrl(image.publicId, { width: 240 }),
+    })),
+  };
 }

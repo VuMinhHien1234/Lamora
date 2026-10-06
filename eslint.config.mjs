@@ -120,11 +120,11 @@ for (const name of features) {
       rules: restrict(cross, NO_PRISMA, NO_REPOSITORY),
     },
     {
-      files: [`${base}/service.ts`],
+      files: [`${base}/*service.ts`],
       rules: restrict(cross, NO_PRISMA, NO_FRAMEWORK),
     },
     // repository.ts chỉ được dùng lib/db và kiểu Prisma; import file cùng feature bằng đường dẫn tương đối
-    { files: [`${base}/repository.ts`], rules: restrict(NO_ANY_FEATURE) },
+    { files: [`${base}/*repository.ts`], rules: restrict(NO_ANY_FEATURE) },
   );
 }
 
@@ -179,8 +179,8 @@ const config = defineConfig([
   {
     files: [
       "src/lib/**/*.ts",
-      "src/features/*/service.ts",
-      "src/features/*/repository.ts",
+      "src/features/*/*service.ts",
+      "src/features/*/*repository.ts",
       "src/features/*/queries.ts",
       "src/features/*/actions.ts",
     ],

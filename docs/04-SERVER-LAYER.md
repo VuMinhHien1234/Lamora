@@ -113,9 +113,9 @@ Quy tắc: đăng nhập sai 5 lần trong 15 phút → khóa thêm 15 phút (đ
 
 | # | Tên | Loại | Quyền | Input | Output / Ghi chú |
 |---|---|---|---|---|---|
-| 1 | `getImageUploadSignature` | A | 🔐 | `folder`: `products` · `categories` · `collections` · `banners` | Chữ ký upload Cloudinary (trình duyệt upload thẳng lên Cloudinary, không đi qua server). Thư mục cố định `lamora/<folder>`; jpg/png/webp, ≤ 5 MB; chữ ký hết hạn sau 10 phút. Dùng cho sản phẩm, danh mục, bộ sưu tập |
+| 1 | `getImageUploadSignature` | A | 🔐 | `folder`: `products` · `categories` · `collections` · `banners` | Chữ ký upload Cloudinary (trình duyệt upload thẳng lên Cloudinary, không đi qua server). Thư mục cố định `lamora/<folder>`; jpg/png/webp, ≤ 5 MB; Cloudinary tự giới hạn chữ ký trong 1 giờ kể từ `timestamp` (không ép được 10 phút phía server). Dùng cho sản phẩm, danh mục, bộ sưu tập |
 
-Xóa ảnh trên Cloudinary: hàm nội bộ `deleteImage(publicId)` trong `media/service.ts`, được `product`, `category`, `collection` gọi khi xóa/thay ảnh.
+Xóa ảnh trên Cloudinary: hàm nội bộ `deleteImage(publicId)` trong `media/service.ts`, được `product`, `category`, `collection` gọi khi xóa/thay ảnh. Xóa theo kiểu **cố gắng hết sức**: lỗi mạng chỉ ghi log, không làm hỏng thao tác của chủ shop (ảnh mồ côi còn sót chỉ tốn dung lượng, dọn tay trên Cloudinary). `isShopPublicId(publicId, folder)` kiểm tra publicId thuộc `lamora/<folder>/` trước khi lưu vào DB.
 
 ---
 

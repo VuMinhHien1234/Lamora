@@ -1,3 +1,4 @@
+import { deleteImage, isShopPublicId } from "@/features/media";
 import { AppError } from "@/lib/errors";
 import { slugify } from "@/lib/slug";
 import * as repo from "./repository";
@@ -97,8 +98,17 @@ export async function findActiveBySlug(slug: string): Promise<CategoryRecord> {
   return found;
 }
 
+function assertValidImage(publicId: string | undefined): void {
+  if (publicId && !isShopPublicId(publicId, "categories")) {
+    throw new AppError("VALIDATION_ERROR", "Ảnh không hợp lệ, vui lòng tải lại ảnh.", {
+      fieldErrors: { _form: ["Ảnh không hợp lệ, vui lòng tải lại ảnh."] },
+    });
+  }
+}
+
 export async function createCategory(input: CategoryInput): Promise<CategoryRecord> {
   await assertValidParent(input.parentId ?? null);
+  assertValidImage(input.imagePublicId);
   const slug = input.slug ?? (await pickFreeSlug(slugify(input.name), (s) => repo.slugExists(s)));
   if (input.slug && (await repo.slugExists(slug))) {
     throw new AppError("CONFLICT", "Đường dẫn này đã tồn tại.", {
@@ -113,13 +123,18 @@ export async function updateCategory(id: string, input: CategoryInput): Promise<
   const current = await repo.findById(id);
   if (!current) throw new AppError("NOT_FOUND", "Không tìm thấy danh mục.");
   await assertValidParent(input.parentId ?? null, id);
+  assertValidImage(input.imagePublicId);
   const slug = input.slug ?? current.slug;
   if (slug !== current.slug && (await repo.slugExists(slug, id))) {
     throw new AppError("CONFLICT", "Đường dẫn này đã tồn tại.", {
       fieldErrors: { slug: ["Đường dẫn đã tồn tại"] },
     });
   }
-  return repo.updateById(id, toWriteData(input, slug));
+  const updated = await repo.updateById(id, toWriteData(input, slug));
+  if (current.imagePublicId && current.imagePublicId !== (input.imagePublicId ?? null)) {
+    await deleteImage(current.imagePublicId);
+  }
+  return updated;
 }
 
 export async function reorderCategories(items: ReorderItem[]): Promise<void> {
@@ -140,6 +155,6 @@ export async function deleteCategory(id: string): Promise<void> {
   if (children > 0) {
     throw new AppError("CATEGORY_NOT_EMPTY", `Danh mục còn ${children} danh mục con`);
   }
-  // TODO(g4): xóa ảnh trên Cloudinary qua media/service.deleteImage khi có module media.
   await repo.deleteById(id);
+  if (current.imagePublicId) await deleteImage(current.imagePublicId);
 }

@@ -1,11 +1,20 @@
 import { requireAdmin } from "@/features/auth";
+import { cloudinaryUrl } from "@/lib/cloudinary";
 import * as service from "./service";
-import type { CategoryNode, CategoryRecord } from "./types";
+import type { CategoryNode, CategoryRecord, CategoryWithCount } from "./types";
+
+const PREVIEW_WIDTH = 240;
+
+function withPreview<T extends CategoryWithCount>(row: T): T {
+  const url = row.imagePublicId ? cloudinaryUrl(row.imagePublicId, { width: PREVIEW_WIDTH }) : null;
+  return { ...row, imagePreviewUrl: url };
+}
 
 /** 🔐 Tất cả danh mục (kể cả đang ẩn) kèm số sản phẩm. */
 export async function adminListCategories(): Promise<CategoryNode[]> {
   await requireAdmin();
-  return service.listAdminCategories();
+  const tree = await service.listAdminCategories();
+  return tree.map((node) => ({ ...withPreview(node), children: node.children.map(withPreview) }));
 }
 
 /** 🌐 Cây danh mục đang bật, dùng cho menu. */
