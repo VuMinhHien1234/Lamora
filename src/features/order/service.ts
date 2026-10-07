@@ -1,3 +1,4 @@
+import { notifyNewOrder } from "@/features/notification";
 import { computeShippingQuote, resolveAddress } from "@/features/shipping";
 import { AppError } from "@/lib/errors";
 import { vnDateString } from "@/lib/date";
@@ -5,7 +6,7 @@ import { generateOrderCode } from "./code";
 import { planOrder } from "./plan";
 import * as repo from "./repository";
 import { MAX_DELIVERY_DAYS_AHEAD, type CreateOrderInput } from "./schema";
-import type { CreateOrderData, OrderLineError } from "./types";
+import type { CreateOrderData, OrderDraft, OrderLineError, PlacedOrder } from "./types";
 
 const SPAM_WINDOW_MS = 10 * 60 * 1000;
 const SPAM_MAX_ORDERS = 3;
@@ -46,6 +47,31 @@ function cartInvalid(errors: OrderLineError[]): AppError {
   });
 }
 
+/** Báo chủ shop sau khi đã ghi đơn. Không ảnh hưởng kết quả đặt hàng dù gửi lỗi. */
+async function notifyOrder(order: PlacedOrder, draft: OrderDraft): Promise<void> {
+  await notifyNewOrder({
+    id: order.id,
+    code: order.code,
+    customerName: draft.customerName,
+    customerPhone: draft.customerPhone,
+    customerEmail: draft.customerEmail,
+    recipientName: draft.recipientName,
+    recipientPhone: draft.recipientPhone,
+    addressLine: draft.addressLine,
+    wardName: draft.wardName,
+    provinceName: draft.provinceName,
+    preferredDeliveryDate: draft.preferredDeliveryDate,
+    isGift: draft.isGift,
+    customerNote: draft.customerNote,
+    paymentMethod: draft.paymentMethod,
+    subtotal: draft.subtotal,
+    shippingFee: draft.shippingFee,
+    giftWrapFee: draft.giftWrapFee,
+    total: draft.total,
+    items: draft.items,
+  });
+}
+
 /** Đơn giả cho bot (ô bẫy `website` bị điền): trả "thành công" nhưng không tạo gì (docs/04 mục 8.3). */
 function fakeSuccess(input: CreateOrderInput, now: Date): CreateOrderData {
   return { code: generateOrderCode(now), total: 0, paymentMethod: input.paymentMethod };
@@ -81,6 +107,7 @@ export async function createOrder(
     () => generateOrderCode(now),
   );
   if (!result.ok) throw cartInvalid(result.errors);
+  await notifyOrder(result.order, result.draft);
   const { code, total, paymentMethod } = result.order;
   return { code, total, paymentMethod };
 }

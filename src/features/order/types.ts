@@ -29,6 +29,8 @@ export type OrderItemDraft = {
   unitPrice: number;
   quantity: number;
   lineTotal: number;
+  cardMessage: string | null;
+  giftWrap: boolean;
 };
 
 export type OrderDraft = {
@@ -64,7 +66,72 @@ export type PlanResult = { ok: true; draft: OrderDraft } | { ok: false; errors: 
 export type PlacedOrder = { id: string; code: string; total: number; paymentMethod: PaymentMethod };
 
 export type PlaceOrderResult =
-  { ok: true; order: PlacedOrder } | { ok: false; errors: OrderLineError[] };
+  { ok: true; order: PlacedOrder; draft: OrderDraft } | { ok: false; errors: OrderLineError[] };
 
 /** Kết quả trả cho trình duyệt sau khi đặt đơn. */
 export type CreateOrderData = { code: string; total: number; paymentMethod: PaymentMethod };
+
+/** Dữ liệu trang "Đặt hàng thành công" (S9). Không có số điện thoại hay địa chỉ chi tiết đầy đủ ngoài người nhận cần xác nhận. */
+export type OrderConfirmation = {
+  code: string;
+  status: string;
+  paymentMethod: "COD" | "BANK_TRANSFER";
+  paymentStatus: string;
+  subtotal: number;
+  shippingFee: number;
+  giftWrapFee: number;
+  total: number;
+  recipientName: string;
+  addressText: string;
+  /** YYYY-MM-DD */
+  preferredDeliveryDate: string | null;
+  isGift: boolean;
+  items: {
+    productName: string;
+    variantLabel: string | null;
+    quantity: number;
+    lineTotal: number;
+    imageUrl: string | null;
+  }[];
+};
+
+export type ConfirmationRow = {
+  code: string;
+  status: string;
+  paymentMethod: "COD" | "BANK_TRANSFER";
+  paymentStatus: string;
+  subtotal: number;
+  shippingFee: number;
+  giftWrapFee: number;
+  total: number;
+  recipientName: string;
+  addressLine: string;
+  wardName: string;
+  provinceName: string;
+  preferredDeliveryDate: Date | null;
+  isGift: boolean;
+  items: {
+    productName: string;
+    variantLabel: string | null;
+    quantity: number;
+    lineTotal: number;
+    imagePublicId: string | null;
+  }[];
+};
+
+/** Dòng dữ liệu cho tra cứu đơn (S10): như xác nhận đơn + số điện thoại để đối chiếu, vận chuyển, lịch sử. */
+export type LookupRow = ConfirmationRow & {
+  customerPhone: string;
+  recipientPhone: string;
+  carrier: string | null;
+  trackingCode: string | null;
+  history: { toStatus: string; createdAt: Date }[];
+};
+
+/** Kết quả tra cứu trả cho khách. Không chứa số điện thoại. */
+export type OrderLookup = {
+  order: OrderConfirmation;
+  carrier: string | null;
+  trackingCode: string | null;
+  history: { status: string; at: string }[];
+};

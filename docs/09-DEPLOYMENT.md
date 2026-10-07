@@ -1,8 +1,8 @@
 # 09 — DEPLOYMENT: Hạ tầng, triển khai, sao lưu, vận hành
 
-> Dựa trên `00-MASTER-PLAN.md` v0.2, `01-TECH-STANDARDS.md` v1.0, `08-SECURITY-SEO.md` v1.0 · Phiên bản: v1.1 · 2026-10-05
+> Dựa trên `00-MASTER-PLAN.md` v1.0, `01-TECH-STANDARDS.md` v2.0, `07-TELEGRAM-DAT-MON.md` v2.0, `08-SECURITY-SEO.md` v2.0 · Phiên bản: v2.0 · 2026-10-07
 >
-> Mục tiêu: chạy thật với chi phí **gần 0đ/tháng** (chỉ trả tiền tên miền), dễ vận hành bởi một người.
+> Mục tiêu: chạy thật với chi phí **gần 0đ/tháng** (chỉ trả tiền tên miền), dễ vận hành bởi một người. Hạ tầng giữ như bản Lamora; khác biệt chính: không còn VietQR, thêm tác vụ gửi lại Telegram, dùng project Neon và Cloudinary **mới**.
 
 ---
 
@@ -10,15 +10,15 @@
 
 ```mermaid
 flowchart LR
-    K[Khách / Chủ shop] -->|HTTPS| N[Netlify<br/>Next.js]
+    K[Khách / Chủ tiệm] -->|HTTPS| N[Netlify<br/>Next.js]
     N -->|Prisma, pooled| D[(Neon Postgres<br/>Singapore)]
     N -->|ảnh| C[Cloudinary]
     K -->|tải ảnh| C
-    K -->|ảnh QR| Q[img.vietqr.io]
-    N -->|đơn mới| T[Telegram Bot]
+    K -->|bấm xem bản đồ| M[Google Maps]
+    N -->|yêu cầu đặt món,<br/>tin liên hệ| T[Telegram Bot → nhóm của tiệm]
+    T -.->|P1: bấm nút| N
     G[GitHub<br/>repo private] -->|push main| N
-    G -->|Actions: CI, backup,<br/>health check, dọn dẹp| D
-    G -->|Actions| N
+    G -->|Actions: CI, backup,<br/>monitor, dọn dẹp| D
 ```
 
 ---
@@ -27,82 +27,84 @@ flowchart LR
 
 | Dịch vụ | Gói | Giới hạn chính cần nhớ | Khi chạm giới hạn |
 |---|---|---|---|
-| **Netlify** | Free | **300 credits/tháng**. Mỗi lần deploy production tốn 15 credits; băng thông 20 credits/GB; compute 10 credits/GB-giờ; 2 credits/10.000 request | Website **tạm dừng** đến tháng sau, không tính phí phát sinh |
-| **Neon** | Free | 1 GB lưu trữ/project; 100 CU-giờ compute/project/tháng; tự tắt sau 5 phút không dùng; khôi phục trong 6 giờ gần nhất | Không ghi thêm được dữ liệu / compute tạm ngừng |
-| **Cloudinary** | Free | 25 credits/tháng (1 credit ≈ 1 GB lưu trữ, hoặc 1 GB băng thông, hoặc 1.000 lần biến đổi ảnh) | Ảnh ngừng phục vụ / biến đổi đến tháng sau |
-| **GitHub** | Free (private repo) | Số phút Actions miễn phí mỗi tháng có giới hạn (đủ cho CI + tác vụ định kỳ của dự án nhỏ) | Actions dừng đến tháng sau |
-| **Telegram Bot** | Miễn phí | — | — |
+| **Netlify** | Free | **300 credits/tháng**; mỗi lần deploy production ~15 credits; băng thông ~20 credits/GB | Website **tạm dừng** đến tháng sau |
+| **Neon** | Free | 1 GB lưu trữ; 100 CU-giờ compute/tháng; tự tắt sau 5 phút; khôi phục 6 giờ gần nhất | Compute tạm ngừng |
+| **Cloudinary** | Free | 25 credits/tháng | Ảnh ngừng phục vụ |
+| **GitHub** | Free (private) | Khoảng 2.000 phút Actions/tháng, mỗi lần chạy tính tối thiểu 1 phút | Actions dừng đến tháng sau |
+| **Telegram Bot** | Miễn phí | ~20 tin/phút vào một nhóm | — |
 | **Tên miền** | Trả phí theo năm | — | — |
 
-> Bảng giá và giới hạn của các dịch vụ thay đổi thường xuyên (Netlify đã điều chỉnh tỉ lệ credits vào tháng 4/2026). **Kiểm tra lại khi đăng ký** và ghi ngày kiểm tra vào mục 10.
+> Giới hạn các dịch vụ thay đổi thường xuyên. **Kiểm tra lại khi đăng ký** và ghi vào mục 10.
 
-### 2.1 Ngân sách credits Netlify (ước tính mỗi tháng)
+### 2.1 Ngân sách credits Netlify (ước tính/tháng)
 
 | Hạng mục | Ước tính | Credits |
 |---|---|---|
 | Deploy production | 8 lần | 120 |
-| Băng thông HTML/JS/CSS (ảnh nằm ở Cloudinary) | ~3 GB | 60 |
-| Request | ~150.000 | 30 |
-| Compute (server render, server action) | ~4 GB-giờ | 40 |
-| **Dự phòng** | | **50** |
+| Băng thông HTML/JS/CSS (ảnh ở Cloudinary) | ~2 GB | 40 |
+| Request + compute (trang tĩnh, chỉ form và admin chạy server) | | 60 |
+| **Dự phòng** | | **80** |
 | **Tổng** | | **300** |
 
-**Quy tắc để không vượt credits**
-1. **Gộp thay đổi rồi mới deploy production**: việc hằng ngày gộp vào `develop`; gộp `develop` → `main` theo đợt (khoảng 1–2 lần/tuần). Tối đa **10 lần deploy production/tháng**.
-2. Chỉ build `main` (production), `develop` (branch deploy) và Pull Request. Theo bảng credits hiện tại chỉ deploy production bị tính 15 credits; **kiểm tra lại** trên trang Usage sau tuần đầu.
-3. Bỏ qua build khi chỉ sửa tài liệu: cấu hình lệnh `ignore` để không build nếu commit chỉ đổi `docs/` hoặc `*.md`.
-4. Ảnh luôn phục vụ từ Cloudinary, **không** đặt ảnh lớn trong `public/`.
-5. Dùng cache trang (`08` mục 15) để giảm compute.
-6. Theo dõi credits trên bảng điều khiển Netlify **mỗi tuần** trong tháng đầu.
+**Quy tắc để không vượt credits** (giữ từ bản cũ)
+1. Việc hằng ngày gộp vào `develop`; gộp `develop` → `main` 1–2 lần/tuần; tối đa **10 deploy production/tháng**.
+2. Bỏ qua build khi chỉ sửa `docs/` hoặc `*.md` (lệnh `ignore` trong `netlify.toml`).
+3. Ảnh luôn ở Cloudinary, không đặt ảnh lớn trong `public/`.
+4. Trang khách cache tĩnh (`08` mục 15).
+5. **Đổi giá / bật “Tạm hết” trong admin không cần deploy** — chỉ làm mới cache.
+6. Theo dõi credits mỗi tuần trong tháng đầu.
 
 ### 2.2 Phương án dự phòng
-Nếu credits liên tục chạm 80% trước cuối tháng:
-- **A.** Nâng lên gói trả phí thấp nhất của Netlify (website không bị tạm dừng).
-- **B.** Chuyển sang Cloudflare Workers dùng adapter OpenNext cho Next.js (gói miễn phí giới hạn theo số request/ngày, cho phép dùng thương mại). Cần kiểm tra mức hỗ trợ tính năng Next.js tại thời điểm chuyển.
+- **A.** Nâng gói trả phí thấp nhất của Netlify.
+- **B.** Chuyển sang Cloudflare Workers với adapter OpenNext (kiểm tra mức hỗ trợ Next.js khi chuyển).
 
-Nhờ kiến trúc ở `01`, đổi nhà cung cấp hosting chỉ ảnh hưởng cấu hình deploy, không phải sửa code nghiệp vụ.
+### 2.3 Ngân sách phút GitHub Actions (ước tính/tháng)
+
+| Workflow | Lịch | Phút |
+|---|---|---|
+| `ci.yml` | ~60 PR/push × ~5 phút | 300 |
+| `monitor.yml` (health + gửi lại Telegram) | 30 phút/lần trong giờ mở cửa, 1 giờ/lần ban đêm ≈ 40 lần/ngày | 1.200 |
+| `backup.yml` | 1 lần/ngày × ~2 phút | 60 |
+| `cron.yml` (dọn dẹp) | 1 lần/ngày | 30 |
+| **Tổng** | | **~1.600 / 2.000** |
+
+Nếu sát hạn mức: giãn `monitor.yml` ban đêm thành 2 giờ/lần, hoặc chuyển repo sang public (không khuyến nghị).
 
 ---
 
 ## 3. Môi trường
 
-| Môi trường | Code | Database | URL | Dữ liệu |
+| Môi trường | Code | Database | URL | Telegram |
 |---|---|---|---|---|
-| **Local** | máy chủ shop | Neon branch `dev` | `localhost:3000` | Seed mẫu |
-| **Preview** | mỗi Pull Request và nhánh `develop` | Neon branch `preview` | URL deploy preview / branch deploy của Netlify | Seed mẫu |
-| **Production** | nhánh `main` | Neon branch `main` | tên miền chính | Dữ liệu thật |
+| **Local** | máy chủ tiệm | Neon branch `dev` (hoặc Postgres máy) | `localhost:3000` | Tắt, hoặc nhóm thử |
+| **Preview** | mỗi PR và `develop` | Neon branch `preview` | URL preview Netlify | Tắt (`TELEGRAM_ENABLED=false`) |
+| **Production** | `main` | Neon branch `main` | tên miền chính | Nhóm thật của tiệm |
 
-- Branch của Neon tách dữ liệu nhưng dùng chung project, không tốn thêm tiền.
-- Biến môi trường trên Netlify đặt **theo ngữ cảnh** (Production / Deploy Previews) để preview không bao giờ ghi vào database thật.
-- Telegram ở môi trường preview gửi vào chat thử nghiệm riêng, hoặc tắt (biến `TELEGRAM_ENABLED=false`).
+Biến môi trường trên Netlify đặt **theo ngữ cảnh** để preview không ghi vào DB thật và không gửi tin vào nhóm thật.
 
 ---
 
-## 4. Thiết lập lần đầu (chủ shop làm theo, AI hỗ trợ từng bước)
+## 4. Thiết lập lần đầu
 
-### 4.1 Tài khoản
-- [ ] GitHub: tạo repository **private** `lamora-flower`.
-- [ ] Neon: tạo project `lamora-flower`, region **Singapore (AWS ap-southeast-1)**. Tạo branch `dev` và `preview`.
-- [ ] Cloudinary: tạo tài khoản, tạo thư mục `lamora/products`, `lamora/categories`, `lamora/banners`.
-- [ ] Telegram: tạo bot theo `07` mục 4.1.
-- [ ] Netlify: đăng nhập bằng GitHub, **chưa** kết nối repo cho tới khi xong bước A4 (`04` mục 14).
+### 4.1 Tài khoản (tạo **mới** cho Bánh Mì Thanh Long, không dùng chung với Lamora)
+- [ ] GitHub: repository **private** `banh-mi-thanh-long` (`12` bước 0).
+- [ ] Neon: project `banh-mi-thanh-long`, region **Singapore**. Branch `dev`, `preview`.
+- [ ] Cloudinary: thư mục `thanhlong/products`, `thanhlong/categories`, `thanhlong/site` (có thể dùng chung tài khoản Cloudinary cũ, khác thư mục).
+- [ ] Telegram: bot + nhóm theo `07` mục 3.
+- [ ] Netlify: site mới, chưa kết nối repo cho tới khi CI xanh.
 
 ### 4.2 Kết nối Netlify
-- [ ] Import repo từ GitHub, nhánh production `main`.
-- [ ] Netlify tự nhận Next.js và dùng adapter tương ứng; kiểm tra phiên bản Next.js được hỗ trợ.
-- [ ] Lệnh build:
-  - Production: `pnpm prisma migrate deploy && pnpm build`
-  - Deploy Preview: `pnpm prisma migrate deploy && pnpm build` (trỏ tới branch `preview`)
-- [ ] Phiên bản Node lấy từ `.nvmrc`.
-- [ ] Nhập biến môi trường (`01` mục 14 + `IP_HASH_SALT`, `CRON_SECRET`, `TELEGRAM_ENABLED`).
-- [ ] Cấu hình bỏ qua build khi chỉ sửa tài liệu (mục 2.1, quy tắc 3).
+- [ ] Import repo, nhánh production `main`.
+- [ ] Lệnh build: `pnpm prisma migrate deploy && pnpm build` (Production và Preview, mỗi ngữ cảnh trỏ đúng branch Neon).
+- [ ] Node theo `.nvmrc`.
+- [ ] Biến môi trường theo `01` mục 14.
+- [ ] Bỏ qua build khi chỉ sửa tài liệu.
 
 ### 4.3 Tên miền
-- [ ] Mua tên miền (gợi ý `lamoraflower.vn` hoặc `lamoraflower.com`) tại nhà đăng ký uy tín. `.vn` cần khai báo thông tin chủ thể theo quy định.
-- [ ] Trỏ DNS về Netlify theo hướng dẫn của Netlify (bản ghi `A`/`ALIAS` cho tên miền gốc, `CNAME` cho `www`).
-- [ ] Netlify tự cấp HTTPS (Let's Encrypt). Bật “Force HTTPS”.
-- [ ] Chọn một dạng chính (có hoặc không `www`), dạng còn lại chuyển hướng 301.
-- [ ] Cập nhật `NEXT_PUBLIC_SITE_URL` và deploy lại.
+- [ ] Mua `banhmithanhlong.vn` hoặc `.com` (kiểm tra còn trống).
+- [ ] Trỏ DNS về Netlify; bật Force HTTPS; chọn một dạng chính (có/không `www`), dạng còn lại 301.
+- [ ] Cập nhật `NEXT_PUBLIC_SITE_URL`, `SITE_URL` (GitHub), link “Trang web” trên Google Business Profile.
+- [ ] P1: đăng ký lại webhook Telegram với tên miền mới (`07` mục 6).
 
 ---
 
@@ -110,68 +112,62 @@ Nhờ kiến trúc ở `01`, đổi nhà cung cấp hosting chỉ ảnh hưởng
 
 ```mermaid
 flowchart LR
-    A[Nhánh feat/...] --> B[Pull Request vào develop]
-    B --> C{CI GitHub<br/>lint · typecheck · test · build}
+    A[Nhánh feat/...] --> B[PR vào develop]
+    B --> C{CI<br/>lint · typecheck · test · build}
     C -->|đỏ| A
-    C -->|xanh| D[Deploy Preview<br/>chủ shop xem thử]
-    D -->|ổn| E[Gộp vào develop]
+    C -->|xanh| D[Preview: chủ tiệm xem trên điện thoại]
+    D -->|ổn| E[Gộp develop]
     E --> H[PR develop → main<br/>1–2 lần/tuần]
-    H --> F[Netlify: migrate + build<br/>Production]
-    F --> G[Kiểm tra nhanh mục 5.2]
+    H --> F[Netlify: migrate + build Production]
+    F --> G[Kiểm tra nhanh 5.2]
 ```
 
 ### 5.1 Trước khi gộp `develop` vào `main`
-- [ ] CI xanh.
-- [ ] Đã xem deploy preview trên **điện thoại** và máy tính.
-- [ ] Nếu có migration: migration tương thích ngược (`01` mục 12.4).
-- [ ] Có thay đổi lớn (luồng đặt hàng, thanh toán): chạy E2E Playwright.
+- [ ] CI xanh; đã xem preview trên điện thoại.
+- [ ] Migration tương thích ngược.
+- [ ] Thay đổi chạm form đặt món / Telegram: chạy E2E.
 
-### 5.2 Kiểm tra nhanh sau mỗi lần deploy production (5 phút)
-- [ ] Trang chủ, một trang danh sách, một trang chi tiết mở được.
-- [ ] Thêm giỏ → trang thanh toán hiện phí ship đúng.
-- [ ] Đăng nhập admin được, danh sách đơn hiện đúng.
+### 5.2 Kiểm tra nhanh sau deploy production (5 phút)
+- [ ] Trang chủ, thực đơn, một trang món mở được; giá đúng.
+- [ ] Gửi một yêu cầu đặt món thử → nhóm Telegram nhận tin → hủy yêu cầu thử với lý do “Thử nghiệm”.
+- [ ] Đăng nhập admin được.
 - [ ] `/api/health` trả `ok`.
 
-### 5.3 Quay lại bản trước (rollback)
-- Code: trên Netlify, mở danh sách deploy, chọn bản trước → **Publish deploy**. Website trở lại ngay.
-- Database: migration luôn tương thích ngược nên code cũ vẫn chạy với schema mới. Nếu dữ liệu bị hỏng: khôi phục theo mục 6.3.
+### 5.3 Quay lại bản trước
+Netlify → Deploys → chọn bản trước → **Publish deploy**. Dữ liệu hỏng: khôi phục theo mục 6.3.
 
 ---
 
 ## 6. Sao lưu và khôi phục
 
-Gói Free của Neon chỉ cho khôi phục trong **6 giờ gần nhất**, nên cần sao lưu riêng.
-
-### 6.1 Sao lưu tự động hằng ngày
-- GitHub Actions `backup.yml`, chạy **02:00 giờ Việt Nam** mỗi ngày.
-- Các bước: `pg_dump` (dùng `DIRECT_URL` của branch `main`; phiên bản `pg_dump` khớp phiên bản Postgres của Neon) → nén → **mã hóa bằng GPG** với `BACKUP_PASSPHRASE` → lưu thành artifact của workflow, giữ **30 ngày**.
-- Chủ nhật hằng tuần: chủ shop tải một bản về lưu ở Google Drive cá nhân (giữ lâu dài).
-- Workflow lỗi → GitHub gửi email thông báo.
+### 6.1 Sao lưu tự động hằng ngày (giữ từ bản cũ)
+- `backup.yml`, **02:00 giờ Việt Nam**: `pg_dump` (branch `main`, phiên bản khớp Neon) → nén → **mã hóa GPG** (`BACKUP_PASSPHRASE`) → artifact giữ **30 ngày**.
+- Chủ nhật: chủ tiệm tải một bản về Google Drive.
+- Lỗi → GitHub gửi email.
 
 ### 6.2 Ảnh
-Ảnh nằm trên Cloudinary. Mỗi tháng xuất danh sách `publicId` từ database (đã có trong bản sao lưu). Giữ **ảnh gốc** trong thư mục máy tính/Google Drive của chủ shop.
+Giữ **ảnh gốc** của món trong máy / Google Drive. `publicId` có trong bản sao lưu DB.
 
 ### 6.3 Khôi phục
-1. Sự cố trong vòng 6 giờ: dùng tính năng khôi phục theo thời điểm của Neon (tạo branch từ thời điểm trước sự cố, kiểm tra, rồi đổi sang).
-2. Cũ hơn: tải artifact sao lưu → giải mã GPG → `pg_restore` vào một branch mới của Neon → kiểm tra → trỏ `DATABASE_URL` sang.
-3. **Diễn tập khôi phục** một lần trước khi ra mắt và mỗi quý một lần (`10` mục 8).
+1. Sự cố trong 6 giờ: khôi phục theo thời điểm của Neon (tạo branch, kiểm tra, đổi sang).
+2. Cũ hơn: tải artifact → giải mã → `pg_restore` vào branch mới → trỏ `DATABASE_URL`.
+3. **Diễn tập khôi phục** một lần trước ra mắt, sau đó mỗi quý.
+
+> Dữ liệu quan trọng nhất là **thực đơn**; yêu cầu đặt món đã có bản sao trong nhóm Telegram. Mất DB vẫn tiếp tục bán được bằng điện thoại/Zalo trong lúc khôi phục.
 
 ---
 
 ## 7. Tác vụ định kỳ
 
-Dùng GitHub Actions `schedule` gọi tới route nội bộ có bảo vệ bằng header `Authorization: Bearer <CRON_SECRET>`.
+GitHub Actions `schedule` gọi route nội bộ với `Authorization: Bearer <CRON_SECRET>`. Lịch dùng giờ UTC (06:00 VN = 23:00 UTC hôm trước) và có thể trễ vài phút.
 
 | Tác vụ | Lịch (giờ VN) | Cách làm | Ưu tiên |
 |---|---|---|---|
-| Sao lưu database | 02:00 hằng ngày | `backup.yml` (mục 6.1) | P0 |
-| Kiểm tra website sống | Mỗi giờ | `health.yml` gọi `/api/health`; lỗi 2 lần liên tiếp → gửi Telegram | P0 |
-| Dọn `RateLimitHit` cũ, xóa `ipHash` > 90 ngày | 03:00 hằng ngày | gọi `POST /api/cron/cleanup` | P0 |
-| Nhắc đơn chờ xác nhận | 08:00 hằng ngày | gọi `POST /api/cron/pending-reminder` | P1 |
-
-- Lịch của GitHub Actions dùng giờ UTC (02:00 giờ VN = 19:00 UTC hôm trước) và có thể chạy trễ vài phút.
-- Health check mỗi giờ sẽ đánh thức database Neon; mức này nằm trong hạn mức compute miễn phí. Không đặt dày hơn.
-- Thêm route `/api/cron/*` vào `04` mục 12.
+| Sao lưu database | 02:00 hằng ngày | `backup.yml` | P0 |
+| **Monitor**: kiểm tra `/api/health` + gọi `POST /api/cron/telegram-retry` | Mỗi 30 phút trong giờ mở cửa, mỗi giờ ban đêm | `monitor.yml`. Health lỗi 2 lần liên tiếp → gửi Telegram cảnh báo; còn bản ghi chưa gửi > 60 phút → job lỗi → email | P0 |
+| Dọn `RateLimitHit` > 1 ngày, xóa `ipHash` > 90 ngày | 03:00 hằng ngày | `cron.yml` → `POST /api/cron/cleanup` | P0 |
+| Ẩn thông tin cá nhân yêu cầu > 12 tháng | 03:00 hằng ngày | cùng `cleanup` | P1 |
+| Bật lại món “Tạm hết” | 05:00 hằng ngày | `POST /api/cron/reset-availability` | P1, tùy chọn |
 
 ---
 
@@ -179,43 +175,41 @@ Dùng GitHub Actions `schedule` gọi tới route nội bộ có bảo vệ bằ
 
 | Theo dõi | Ở đâu | Tần suất |
 |---|---|---|
-| Credits Netlify | Bảng điều khiển Netlify → Usage | Hằng tuần |
-| Dung lượng và compute Neon | Bảng điều khiển Neon | Hằng tháng |
-| Credits Cloudinary | Bảng điều khiển Cloudinary | Hằng tháng |
+| Credits Netlify | Netlify → Usage | Hằng tuần |
+| Phút GitHub Actions | GitHub → Settings → Billing | Hằng tháng |
+| Neon, Cloudinary | Bảng điều khiển | Hằng tháng |
 | Lỗi server | Netlify → Logs (Functions) | Khi có báo lỗi |
-| Website sống | Telegram từ `health.yml` | Tự động |
+| Yêu cầu chưa gửi Telegram | Admin M2 (thẻ cảnh báo) | Mỗi ngày |
 | Tốc độ trang | PageSpeed Insights | Hằng tháng |
-| Lượt truy cập, chuyển đổi | Google Analytics | Hằng tuần |
-| Lập chỉ mục | Google Search Console | Hằng tháng |
-
-P1: thêm dịch vụ theo dõi lỗi có gói miễn phí (ví dụ Sentry) để nhận báo lỗi chi tiết. Kiểm tra điều khoản gói miễn phí khi thêm.
+| Lượt xem, lượt bấm “Đặt món”/“Gọi” | Google Analytics (sự kiện) | Hằng tuần |
+| Tìm kiếm, Maps | Search Console, Google Business Profile | Hằng tháng |
 
 ### 8.1 Sổ tay sự cố
 | Hiện tượng | Kiểm tra | Xử lý |
 |---|---|---|
-| Website báo tạm dừng | Credits Netlify | Nâng gói hoặc chờ tháng mới; xem phương án 2.2 |
-| Trang tải chậm vài giây lần đầu | Neon vừa thức dậy sau khi tự tắt | Bình thường ở gói Free |
-| Ảnh không hiện | Credits Cloudinary | Nâng gói hoặc giảm biến đổi ảnh |
-| Không nhận tin Telegram | Token, chat ID; log `notifyNewOrder` | Kiểm tra lại biến môi trường |
-| Đặt hàng báo lỗi chung | Log Netlify, `/api/health` | Quay lại bản deploy trước (mục 5.3) |
-| Lộ khóa bí mật | — | Đổi khóa ngay trên dịch vụ tương ứng, cập nhật Netlify, deploy lại |
+| Không nhận tin Telegram | Admin M2 có thẻ “Chưa gửi được”? Token, chat ID; bot còn trong nhóm? | Sửa biến môi trường, thêm lại bot, bấm “Gửi lại” |
+| Website báo tạm dừng | Credits Netlify | Nâng gói hoặc phương án 2.2; tạm thời nhận đơn qua điện thoại/Zalo |
+| Trang tải chậm vài giây | Neon vừa thức dậy (chỉ admin/form) | Bình thường ở gói Free |
+| Ảnh không hiện | Credits Cloudinary | Nâng gói / giảm biến đổi ảnh |
+| Nhóm Telegram bị spam yêu cầu | Admin M3, log rate limit | Bật Turnstile (`08` mục 3); hạ giới hạn |
+| Lộ token / khóa | — | Đổi ngay, cập nhật Netlify, deploy lại |
 
 ---
 
-## 9. File cấu hình cần tạo
+## 9. File cấu hình
 
 | File | Nội dung |
 |---|---|
-| `netlify.toml` | Lệnh build theo ngữ cảnh, lệnh `ignore` cho thay đổi chỉ ở tài liệu, header bảo mật (nếu không đặt trong `next.config`) |
+| `netlify.toml` | Lệnh build theo ngữ cảnh, `ignore` cho thay đổi chỉ ở docs |
 | `.github/workflows/ci.yml` | lint, typecheck, test, build, `pnpm audit` |
-| `.github/workflows/e2e.yml` | Playwright, chạy thủ công hoặc khi PR có nhãn `e2e` |
+| `.github/workflows/e2e.yml` | Playwright, chạy thủ công hoặc nhãn `e2e` |
 | `.github/workflows/backup.yml` | Mục 6.1 |
-| `.github/workflows/health.yml` | Mục 7 |
-| `.github/workflows/cron.yml` | Dọn dẹp, nhắc đơn |
-| `.github/dependabot.yml` | Cập nhật phụ thuộc hằng tháng, gộp nhóm, nhắm vào `develop` |
-| `.nvmrc` | Phiên bản Node LTS |
+| `.github/workflows/monitor.yml` | Health + gửi lại Telegram (thay `health.yml` cũ) |
+| `.github/workflows/cron.yml` | Dọn dẹp |
+| `.github/dependabot.yml` | Hằng tháng, gộp nhóm, vào `develop` |
+| `.nvmrc` | Node LTS |
 
-**Biến bí mật trên GitHub Actions**: `PROD_DIRECT_URL`, `BACKUP_PASSPHRASE`, `CRON_SECRET`, `SITE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+**Biến bí mật GitHub Actions**: `PROD_DIRECT_URL`, `BACKUP_PASSPHRASE`, `CRON_SECRET`, `SITE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 
 ---
 
@@ -223,16 +217,17 @@ P1: thêm dịch vụ theo dõi lỗi có gói miễn phí (ví dụ Sentry) đ�
 
 | Ngày | Dịch vụ | Giới hạn ghi nhận | Người kiểm tra |
 |---|---|---|---|
-| 2026-10-05 | Netlify Free | 300 credits/tháng; deploy production 15 credits; băng thông 20 credits/GB | Lập kế hoạch |
-| 2026-10-05 | Neon Free | 1 GB/project; 100 CU-giờ/project/tháng; tự tắt sau 5 phút | Lập kế hoạch |
-| 2026-10-05 | Cloudinary Free | 25 credits/tháng | Lập kế hoạch |
+| 2026-10-05 | Netlify Free | 300 credits/tháng; deploy production 15 credits | Lập kế hoạch (Lamora) |
+| 2026-10-05 | Neon Free | 1 GB; 100 CU-giờ/tháng; tự tắt sau 5 phút | Lập kế hoạch (Lamora) |
+| 2026-10-05 | Cloudinary Free | 25 credits/tháng | Lập kế hoạch (Lamora) |
+| _(điền khi đăng ký)_ | GitHub Actions | phút miễn phí/tháng cho repo private | |
 
 ---
 
 ## 11. Cần xác nhận
-
-1. Bạn muốn tên miền `.vn` hay `.com`? `.vn` tạo cảm giác thương hiệu Việt và giúp công cụ tìm kiếm nhận biết website hướng tới khách Việt Nam; `.com` dễ đăng ký hơn.
-2. Bạn có tài khoản Google Drive để lưu bản sao lưu hằng tuần không?
+1. Tên miền `.vn` hay `.com`?
+2. Có Google Drive để lưu bản sao lưu hằng tuần?
+3. Giờ mở cửa thật (để đặt lịch `monitor.yml` dày trong giờ bán).
 
 ---
 
@@ -240,5 +235,5 @@ P1: thêm dịch vụ theo dõi lỗi có gói miễn phí (ví dụ Sentry) đ�
 
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
-| v1.1 | 2026-10-05 | Thêm nhánh `develop` để gộp deploy production theo đợt |
-| v1.0 | 2026-10-05 | Bản đầu tiên |
+| v2.0 | 2026-10-07 | Chuyển sang Bánh Mì Thanh Long: tài khoản/DB mới, bỏ VietQR, thêm `monitor.yml` (health + gửi lại Telegram), ngân sách phút GitHub Actions, môi trường preview tắt Telegram, sổ tay sự cố Telegram |
+| v1.1 | 2026-10-05 | (Lamora) Nhánh `develop` |

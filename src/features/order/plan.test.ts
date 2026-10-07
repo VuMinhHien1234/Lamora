@@ -13,7 +13,7 @@ const ctx: PlanContext = {
 describe("planOrder", () => {
   it("tính tiền từ giá database, cộng phí ship", () => {
     const result = planOrder(
-      orderInput({ items: [{ variantId: "v1", quantity: 2 }] }),
+      orderInput({ items: [{ variantId: "v1", quantity: 2, giftWrap: false }] }),
       [variant("v1", { price: 100_000 })],
       ctx,
     );
@@ -28,7 +28,7 @@ describe("planOrder", () => {
 
   it("miễn phí ship khi đủ mốc", () => {
     const result = planOrder(
-      orderInput({ items: [{ variantId: "v1", quantity: 2 }] }),
+      orderInput({ items: [{ variantId: "v1", quantity: 2, giftWrap: false }] }),
       [variant("v1", { price: 400_000 })],
       ctx,
     );
@@ -39,8 +39,8 @@ describe("planOrder", () => {
     const result = planOrder(
       orderInput({
         items: [
-          { variantId: "v1", quantity: 1 },
-          { variantId: "v1", quantity: 2 },
+          { variantId: "v1", quantity: 1, giftWrap: false },
+          { variantId: "v1", quantity: 2, giftWrap: false },
         ],
       }),
       [variant("v1")],
@@ -72,7 +72,7 @@ describe("planOrder", () => {
 
   it("báo không đủ số lượng", () => {
     const result = planOrder(
-      orderInput({ items: [{ variantId: "v1", quantity: 4 }] }),
+      orderInput({ items: [{ variantId: "v1", quantity: 4, giftWrap: false }] }),
       [variant("v1", { stockQuantity: 3 })],
       ctx,
     );
@@ -83,8 +83,8 @@ describe("planOrder", () => {
     const result = planOrder(
       orderInput({
         items: [
-          { variantId: "v1", quantity: 3 },
-          { variantId: "v1", quantity: 3 },
+          { variantId: "v1", quantity: 3, giftWrap: false },
+          { variantId: "v1", quantity: 3, giftWrap: false },
         ],
       }),
       [variant("v1", { stockQuantity: 5 })],
@@ -106,8 +106,8 @@ describe("planOrder", () => {
     const result = planOrder(
       orderInput({
         items: [
-          { variantId: "v1", quantity: 1 },
-          { variantId: "v2", quantity: 1 },
+          { variantId: "v1", quantity: 1, giftWrap: false },
+          { variantId: "v2", quantity: 1, giftWrap: false },
         ],
       }),
       [variant("v1", { stockQuantity: 0 })],
@@ -116,12 +116,11 @@ describe("planOrder", () => {
     expect(!result.ok && result.errors.map((e) => e.variantId)).toEqual(["v1", "v2"]);
   });
 
-  it("quà tặng: người nhận khác, gói quà +20.000đ, giữ lời nhắn", () => {
+  it("quà tặng: người nhận khác, gói quà +20.000đ, lời nhắn nằm ở dòng hàng", () => {
     const result = planOrder(
       orderInput({
         isGift: true,
-        giftWrap: true,
-        giftMessage: "Chúc mừng!",
+        items: [{ variantId: "v1", quantity: 1, giftWrap: true, cardMessage: "Chúc mừng!" }],
         recipient: { name: "Lan", phone: "0987654321" },
       }),
       [variant("v1")],
@@ -133,22 +132,60 @@ describe("planOrder", () => {
       customerName: "Nguyễn An",
       giftWrap: true,
       giftWrapFee: 20_000,
-      giftMessage: "Chúc mừng!",
+      giftMessage: null,
       total: 350_000 + 25_000 + 20_000,
+    });
+    expect(result.ok && result.draft.items[0]).toMatchObject({
+      cardMessage: "Chúc mừng!",
+      giftWrap: true,
     });
   });
 
-  it("không phải quà tặng: bỏ gói quà và lời nhắn, người nhận là người đặt", () => {
+  it("nhiều sản phẩm: mỗi dòng một lời nhắn, gói quà tính theo số dòng được chọn", () => {
     const result = planOrder(
-      orderInput({ giftWrap: true, giftMessage: "x" }),
+      orderInput({
+        items: [
+          { variantId: "v1", quantity: 2, giftWrap: true, cardMessage: "Tặng mẹ" },
+          { variantId: "v2", quantity: 1, giftWrap: false, cardMessage: "Tặng bạn" },
+          { variantId: "v3", quantity: 1, giftWrap: true },
+        ],
+      }),
+      [variant("v1"), variant("v2"), variant("v3")],
+      ctx,
+    );
+    expect(result.ok && result.draft.giftWrapFee).toBe(40_000);
+    expect(result.ok && result.draft.items.map((i) => [i.cardMessage, i.giftWrap])).toEqual([
+      ["Tặng mẹ", true],
+      ["Tặng bạn", false],
+      [null, true],
+    ]);
+  });
+
+  it("không giao cho người khác: vẫn giữ thiệp và gói quà, người nhận là người đặt", () => {
+    const result = planOrder(
+      orderInput({ items: [{ variantId: "v1", quantity: 1, giftWrap: true, cardMessage: "x" }] }),
       [variant("v1")],
       ctx,
     );
     expect(result.ok && result.draft).toMatchObject({
       recipientName: "Nguyễn An",
+      isGift: false,
+      giftWrap: true,
+      giftWrapFee: 20_000,
+    });
+    expect(result.ok && result.draft.items[0]?.cardMessage).toBe("x");
+  });
+
+  it("không nhập thiệp và không chọn gói quà: không tính phí", () => {
+    const result = planOrder(orderInput(), [variant("v1")], ctx);
+    expect(result.ok && result.draft).toMatchObject({
       giftWrap: false,
       giftWrapFee: 0,
       giftMessage: null,
+    });
+    expect(result.ok && result.draft.items[0]).toMatchObject({
+      cardMessage: null,
+      giftWrap: false,
     });
   });
 

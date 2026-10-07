@@ -14,6 +14,11 @@ export const SITE = {
     zaloUrl: "", // ĐIỀN: ví dụ https://zalo.me/0900000000 (để trống thì ẩn nút Zalo)
     messengerUrl: "", // ĐIỀN: ví dụ https://m.me/ten-trang (để trống thì ẩn nút Messenger)
   },
+  /** Thông tin người bán hiển thị ở chân trang và trang chính sách (docs/08 Phần IV). */
+  seller: {
+    name: "Lamora Flower", // ĐIỀN: tên chủ shop / hộ kinh doanh
+    taxCode: "", // ĐIỀN: mã số thuế (nếu có; để trống thì ẩn)
+  },
   social: {
     facebook: "", // ĐIỀN (để trống thì ẩn)
     instagram: "", // ĐIỀN
@@ -24,11 +29,8 @@ export const SITE = {
 export type NavLink = { label: string; href: string };
 
 // Menu chính. Mega menu theo danh mục sẽ thay thế mục "Sản phẩm" ở bước B1.
-export const MAIN_NAV: NavLink[] = [
-  { label: "Sản phẩm", href: "/san-pham" },
-  { label: "Bộ sưu tập", href: "/san-pham" },
-  { label: "Quà tặng", href: "/san-pham" },
-];
+/** Menu dự phòng khi chưa đọc được danh mục từ database; menu thật dựng từ danh mục đang bật. */
+export const MAIN_NAV: NavLink[] = [{ label: "Tất cả sản phẩm", href: "/san-pham" }];
 
 export const FOOTER_SUPPORT_LINKS: NavLink[] = [
   { label: "Tra cứu đơn hàng", href: "/tra-cuu-don" },
@@ -40,4 +42,24 @@ export const FOOTER_SUPPORT_LINKS: NavLink[] = [
 export const FOOTER_ABOUT_LINKS: NavLink[] = [
   { label: "Giới thiệu", href: "/gioi-thieu" },
   { label: "Liên hệ", href: "/lien-he" },
+];
+
+/** Banner trang chủ (P0 lấy từ đây). Để `imagePublicId` trống thì hiện nền màu kem; điền publicId ảnh Cloudinary khi đã có ảnh. */
+export const HOME_HERO = {
+  eyebrow: "Hoa lụa cao cấp",
+  title: "Những đóa hoa dịu dàng, bền lâu cùng năm tháng",
+  description:
+    "Bình hoa, giỏ hoa và hoa treo tường làm thủ công, cắm sẵn để bạn chỉ việc đặt lên bàn.",
+  ctaLabel: "Xem bộ sưu tập",
+  ctaHref: "/san-pham",
+  imagePublicId: "", // ĐIỀN: publicId ảnh banner trên Cloudinary
+  imageAlt: "Bình hoa lụa Lamora Flower đặt trên bàn gỗ",
+} as const;
+
+/** Bốn cam kết dưới trang chủ (docs/05 mục 4). */
+export const BRAND_PROMISES: { title: string; description: string }[] = [
+  { title: "Hoa lụa cao cấp", description: "Chất liệu mềm, màu tự nhiên, giữ dáng lâu." },
+  { title: "Thiệp lời nhắn miễn phí", description: "Gửi tặng người thương kèm lời chúc riêng." },
+  { title: "Giao toàn quốc", description: "Đóng gói kỹ, miễn phí ship cho đơn từ 800.000₫." },
+  { title: "Đổi trả trong 7 ngày", description: "Hoa móp hoặc lỗi do vận chuyển, shop đổi mới." },
 ];

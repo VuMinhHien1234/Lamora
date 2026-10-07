@@ -1,0 +1,24 @@
+name: Cron
+
+# 03:00 giờ Việt Nam = 20:00 UTC hôm trước.
+on:
+  schedule:
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dọn bộ đếm giới hạn tần suất và ipHash cũ
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          : "${SITE_URL:?Thiếu secret SITE_URL}"
+          : "${CRON_SECRET:?Thiếu secret CRON_SECRET}"
+          curl -fsS --max-time 60 -X POST -H "Authorization: Bearer ${CRON_SECRET}" "${SITE_URL%/}/api/cron/cleanup"

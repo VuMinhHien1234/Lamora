@@ -11,7 +11,8 @@ import type { CategoryOption } from "./product-filters";
 import { PublishPanel } from "./publish-panel";
 import { SeoFields } from "./seo-fields";
 import { useProductEditor } from "./use-product-editor";
-import { VariantsEditor } from "./variants-editor";
+import { SimplePricing } from "./simple-pricing";
+// import { VariantsEditor } from "./variants-editor"; // Tạm tắt: nhiều màu/cỡ. Bật lại cùng khối "Biến thể" bên dưới.
 
 type ProductEditorProps = {
   /** null: thêm mới. */
@@ -52,7 +53,7 @@ function EditorBody({ product, categories, editor }: BodyProps) {
   const patchGeneral = (patch: Partial<GeneralValues>): void =>
     editor.setGeneral((current) => ({ ...current, ...patch }));
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
+    <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)] gap-6">
       {product && <PublishPanel product={product} dirty={editor.dirty} />}
       <EditorSection title="Thông tin chung">
         <GeneralFields
@@ -62,6 +63,17 @@ function EditorBody({ product, categories, editor }: BodyProps) {
           onChange={patchGeneral}
         />
       </EditorSection>
+      <EditorSection
+        title="Giá và tồn kho"
+        description="Nhập giá bán và số lượng còn trong kho. Mã sản phẩm (SKU) được tự tạo."
+      >
+        <SimplePricing
+          rows={editor.rows}
+          errors={editor.errors.variants}
+          onChange={editor.setRows}
+        />
+      </EditorSection>
+      {/* Tạm tắt khối "Biến thể" (nhiều màu/cỡ). Bỏ comment khối này và import VariantsEditor ở đầu file để bật lại.
       <EditorSection
         title="Biến thể"
         description="Mỗi tổ hợp màu và cỡ là một biến thể có giá và tồn kho riêng. Sản phẩm không có màu hay cỡ vẫn cần 1 biến thể."
@@ -73,14 +85,17 @@ function EditorBody({ product, categories, editor }: BodyProps) {
           onChange={editor.setRows}
         />
       </EditorSection>
-      {product && (
-        <EditorSection
-          title="Ảnh sản phẩm"
-          description="Ảnh đầu tiên là ảnh bìa. Cần ít nhất 1 ảnh mới đăng bán được. Ảnh được lưu riêng, không cần bấm Lưu ở đầu trang."
-        >
-          <ImagesEditor key={product.images.map((image) => image.id).join(",")} product={product} />
-        </EditorSection>
-      )}
+      */}
+      <EditorSection
+        title="Ảnh sản phẩm"
+        description="Ảnh đầu tiên là ảnh bìa. Cần ít nhất 1 ảnh mới đăng bán được. Ảnh được lưu khi bạn bấm Lưu ở đầu trang."
+      >
+        <ImagesEditor
+          editor={editor.images}
+          images={product?.images ?? []}
+          variants={product?.variants ?? []}
+        />
+      </EditorSection>
       {product && <CollectionsPlaceholder />}
       <EditorSection title="SEO">
         <SeoFields values={editor.general} errors={editor.errors.general} onChange={patchGeneral} />

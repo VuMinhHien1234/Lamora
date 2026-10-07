@@ -262,6 +262,8 @@ Khóa chính ghép `(productId, collectionId)`.
 | unitPrice | Int | ✔ | Giá lúc đặt |
 | quantity | Int | ✔ | 1–99 |
 | lineTotal | Int | ✔ | `unitPrice × quantity` |
+| cardMessage | String | – | Lời nhắn thiệp riêng của dòng này (tối đa 300 ký tự) |
+| giftWrap | Boolean | ✔ | Dòng này có gói quà (mặc định false). Phí = 20.000₫ × số dòng có gói; `Order.giftWrapFee` là tổng, `Order.giftMessage` chỉ còn ở đơn cũ |
 
 ### 3.10 `OrderStatusHistory`
 | Trường | Kiểu | Bắt buộc | Ghi chú |
@@ -530,6 +532,8 @@ model OrderItem {
   unitPrice     Int
   quantity      Int
   lineTotal     Int
+  cardMessage   String?
+  giftWrap      Boolean         @default(false)
 
   @@index([orderId])
 }

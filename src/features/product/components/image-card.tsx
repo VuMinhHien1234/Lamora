@@ -5,18 +5,21 @@ import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import type { ProductImageRecord, VariantRecord } from "../types";
-import type { ImageDraft } from "./use-images-editor";
+import type { VariantRecord } from "../types";
 
 export type VariantOption = Pick<VariantRecord, "id" | "colorName" | "size">;
 
 type ImageCardProps = {
-  draft: ImageDraft;
-  image: ProductImageRecord;
+  alt: string;
+  variantId: string | null;
+  /** Ảnh xem trước 4:5 (ảnh đã lưu hoặc ảnh vừa tải). */
+  previewUrl: string | null;
   index: number;
   total: number;
   variants: VariantOption[];
-  onChange: (patch: Partial<ImageDraft>) => void;
+  /** Chỉ có khi sản phẩm có nhiều biến thể (ảnh cũ đã lưu). */
+  onVariantChange?: (variantId: string | null) => void;
+  onAltChange: (alt: string) => void;
   onMove: (step: number) => void;
   onRemove: () => void;
 };
@@ -24,13 +27,10 @@ type ImageCardProps = {
 const variantLabel = (v: VariantOption): string =>
   [v.colorName, v.size].filter(Boolean).join(" · ") || "Mặc định";
 
-function Preview({ image, cover }: { image: ProductImageRecord; cover: boolean }) {
-  const url = image.previewUrl ?? null;
+function Preview({ url, alt, cover }: { url: string | null; alt: string; cover: boolean }) {
   return (
     <div className="relative aspect-[4/5] w-24 shrink-0 bg-sand-200 sm:w-28">
-      {url && (
-        <Image src={url} alt={image.alt} fill unoptimized sizes="112px" className="object-cover" />
-      )}
+      {url && <Image src={url} alt={alt} fill unoptimized sizes="112px" className="object-cover" />}
       {cover && (
         <span className="type-small absolute bottom-0 left-0 bg-ink-900 px-2 text-ivory-50">
           Ảnh bìa
@@ -75,39 +75,44 @@ function CardActions({ index, total, onMove, onRemove }: ActionsProps) {
   );
 }
 
-/** Một ảnh: xem trước 4:5, mô tả (alt), gắn biến thể, đổi thứ tự, xóa. */
+/** Một ảnh: xem trước 4:5, mô tả (alt), gắn biến thể (nếu có nhiều biến thể), đổi thứ tự, xóa. */
 export function ImageCard({
-  draft,
-  image,
+  alt,
+  variantId,
+  previewUrl,
   index,
   total,
   variants,
-  onChange,
+  onVariantChange,
+  onAltChange,
   onMove,
   onRemove,
 }: ImageCardProps) {
   return (
     <li className="flex gap-4 border border-sand-200 p-3">
-      <Preview image={image} cover={index === 0} />
+      <Preview url={previewUrl} alt={alt} cover={index === 0} />
       <div className="grid min-w-0 flex-1 gap-3">
         <Input
           label="Mô tả ảnh"
-          value={draft.alt}
+          value={alt}
           maxLength={200}
-          onChange={(event) => onChange({ alt: event.target.value })}
+          hint="Tùy chọn. Để trống sẽ dùng tên sản phẩm."
+          onChange={(event) => onAltChange(event.target.value)}
         />
-        <Select
-          label="Gắn với biến thể"
-          value={draft.variantId ?? ""}
-          onChange={(event) => onChange({ variantId: event.target.value || null })}
-        >
-          <option value="">Dùng chung cho cả sản phẩm</option>
-          {variants.map((v) => (
-            <option key={v.id} value={v.id}>
-              {variantLabel(v)}
-            </option>
-          ))}
-        </Select>
+        {onVariantChange && variants.length > 1 && (
+          <Select
+            label="Gắn với biến thể"
+            value={variantId ?? ""}
+            onChange={(event) => onVariantChange(event.target.value || null)}
+          >
+            <option value="">Dùng chung cho cả sản phẩm</option>
+            {variants.map((v) => (
+              <option key={v.id} value={v.id}>
+                {variantLabel(v)}
+              </option>
+            ))}
+          </Select>
+        )}
         <CardActions index={index} total={total} onMove={onMove} onRemove={onRemove} />
       </div>
     </li>

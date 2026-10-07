@@ -172,7 +172,7 @@ const config = defineConfig([
   },
   // logger là nơi duy nhất được dùng console; seed là script chạy tay
   {
-    files: ["src/lib/logger.ts", "prisma/seed.ts"],
+    files: ["src/lib/logger.ts", "prisma/seed.ts", "prisma/clear-data.ts"],
     rules: { "no-console": "off" },
   },
   // Hàm export của lớp logic phải khai báo kiểu trả về (component .tsx không bắt buộc)

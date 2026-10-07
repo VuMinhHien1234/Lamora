@@ -5,6 +5,7 @@ import Link from "next/link";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { formatVnd } from "@/lib/money";
 import type { ValidatedLine } from "../types";
+import { LineCardEditor } from "./line-card-editor";
 
 export type DisplayLine = ValidatedLine & { quantity: number };
 
@@ -78,6 +79,9 @@ function LineItem({
           <p className="type-small text-warning-700">Tạm thời không thể mua</p>
         )}
         <LineQuantity line={line} onQuantity={onQuantity} />
+        {line.available && !compact && (
+          <LineCardEditor variantId={line.variantId} name={line.productName} />
+        )}
         <button
           type="button"
           onClick={() => onRemove(line.variantId)}

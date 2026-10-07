@@ -7,13 +7,20 @@ import "@fontsource/be-vietnam-pro/300.css";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
 import type { ReactNode } from "react";
+import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { ToastProvider } from "@/components/ui/toast";
 import { SITE } from "@/config/site";
+import { getEnv } from "@/lib/env";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: `${SITE.name} — ${SITE.tagline}`, template: `%s · ${SITE.name}` },
+  metadataBase: new URL(getEnv().NEXT_PUBLIC_SITE_URL),
+  title: {
+    default: `${SITE.name} — Hoa lụa cao cấp, bền đẹp như thật`,
+    template: `%s | ${SITE.name}`,
+  },
   description: SITE.description,
+  openGraph: { siteName: SITE.name, locale: "vi_VN", type: "website" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -29,6 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <ToastProvider>{children}</ToastProvider>
+        <GoogleAnalytics gaId={getEnv().NEXT_PUBLIC_GA_ID} />
       </body>
     </html>
   );

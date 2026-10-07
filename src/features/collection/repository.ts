@@ -14,6 +14,14 @@ export async function findAllWithCount(): Promise<CollectionWithCount[]> {
   return rows.map(({ _count, ...rest }) => ({ ...rest, productCount: _count.products }));
 }
 
+/** Bộ sưu tập đang bật và được chọn hiện ở trang chủ, theo thứ tự đã sắp. */
+export function findHome(): Promise<CollectionRecord[]> {
+  return db.collection.findMany({
+    where: { isActive: true, showOnHome: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
 export function findById(id: string): Promise<CollectionRecord | null> {
   return db.collection.findUnique({ where: { id } });
 }

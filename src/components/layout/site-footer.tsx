@@ -14,7 +14,7 @@ function buildColumns(): FooterColumn[] {
     .filter(([, url]) => url !== "")
     .map(([name]) => name);
   return [
-    { title: "Về Lamora", links: FOOTER_ABOUT_LINKS, lines: [SITE.description] },
+    { title: "Về Lamora", links: FOOTER_ABOUT_LINKS },
     { title: "Hỗ trợ", links: FOOTER_SUPPORT_LINKS },
     { title: "Liên hệ", lines: [contact.phone, contact.email, contact.hours, contact.address] },
     ...(socialLines.length > 0 ? [{ title: "Mạng xã hội", lines: socialLines }] : []),
@@ -30,7 +30,7 @@ function ColumnBody({ column }: { column: FooterColumn }) {
         </Link>
       ))}
       {column.lines?.map((line) => (
-        <p key={line} className="max-w-xs">
+        <p key={line} className="max-w-xs py-1">
           {line}
         </p>
       ))}
@@ -41,12 +41,15 @@ function ColumnBody({ column }: { column: FooterColumn }) {
 /** Footer nền ink-900: 4 cột trên máy tính, danh sách mở/đóng trên điện thoại (docs/03 mục 9.1). */
 export function SiteFooter() {
   const columns = buildColumns();
+  const desktopGrid = columns.length > 3 ? "md:grid-cols-4" : "md:grid-cols-3";
   return (
     <footer className="mt-24 bg-ink-900 text-ivory-50 md:mt-28">
       <div className="page-container py-12 md:py-16">
-        <div className="hidden gap-10 md:grid md:grid-cols-4">
+        <div
+          className={`hidden gap-10 md:mx-auto md:grid md:max-w-5xl md:justify-items-center ${desktopGrid}`}
+        >
           {columns.map((column) => (
-            <section key={column.title}>
+            <section key={column.title} className="w-full max-w-xs">
               <h2 className="type-eyebrow mb-5 text-gold-500">{column.title}</h2>
               <ColumnBody column={column} />
             </section>
@@ -67,10 +70,15 @@ export function SiteFooter() {
             </details>
           ))}
         </div>
-        <div className="mt-12 flex flex-col items-center gap-4 text-center">
+        <div className="mt-12 flex flex-col items-center gap-4 border-t border-ivory-50/15 pt-10 text-center">
           <Logo variant="full" tone="light" />
+          <p className="type-small max-w-md text-ivory-50/80">{SITE.description}</p>
           <p className="type-small text-ivory-50/60">
             © {new Date().getFullYear()} {SITE.name}. Hoa lụa làm tay, giao tận nơi.
+          </p>
+          <p className="type-small text-ivory-50/60">
+            Người bán: {SITE.seller.name}
+            {SITE.seller.taxCode ? ` · MST ${SITE.seller.taxCode}` : ""} · {SITE.contact.address}
           </p>
         </div>
       </div>

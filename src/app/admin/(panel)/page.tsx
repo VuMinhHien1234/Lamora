@@ -1,15 +1,25 @@
 import { AdminPageHeader } from "@/components/layout/admin-page-header";
-import { EmptyState } from "@/components/ui/empty-state";
+import { getAdminSummary, LowStockList, PendingOrdersList, StatCards } from "@/features/dashboard";
+import { adminListOrders } from "@/features/order";
 
-// Trang tạm: tổng quan thật (đơn chờ, doanh thu…) làm ở bước G8 (docs/06, M2).
-export default function AdminHomePage() {
+export const dynamic = "force-dynamic";
+
+/** M2 — Tổng quan (docs/06 mục 4). */
+export default async function AdminHomePage() {
+  const [summary, pending] = await Promise.all([
+    getAdminSummary(),
+    adminListOrders({ status: "PENDING" }),
+  ]);
   return (
     <>
       <AdminPageHeader title="Tổng quan" />
-      <EmptyState
-        title="Chào mừng bạn đến khu quản trị"
-        description="Số liệu đơn hàng và doanh thu sẽ hiện ở đây khi các màn hình quản lý được hoàn thiện."
-      />
+      <div className="flex flex-col gap-6">
+        <StatCards summary={summary} now={new Date()} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <PendingOrdersList rows={pending.rows.slice(0, 5)} />
+          <LowStockList items={summary.lowStock} />
+        </div>
+      </div>
     </>
   );
 }

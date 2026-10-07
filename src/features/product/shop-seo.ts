@@ -24,7 +24,4 @@ export function buildProductJsonLd(product: ShopProduct, siteUrl: string): Recor
   };
 }
 
-/** Chuỗi JSON an toàn để nhúng vào thẻ <script>: không để chữ "<" kết thúc thẻ sớm. */
-export function jsonLdString(data: Record<string, unknown>): string {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
-}
+export { jsonLdString } from "@/lib/seo";

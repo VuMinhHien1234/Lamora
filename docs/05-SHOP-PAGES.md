@@ -1,10 +1,10 @@
-# 05 — SHOP PAGES: Các màn hình web khách hàng
+# 05 — SHOP PAGES: Các màn hình web khách
 
-> Dựa trên `00-MASTER-PLAN.md` v0.2, `01-TECH-STANDARDS.md` v1.0, `03-UI-DESIGN.md` v1.0, `04-SERVER-LAYER.md` v1.1 · Phiên bản: v1.2 · 2026-10-05
+> Dựa trên `00-MASTER-PLAN.md` v1.0, `01-TECH-STANDARDS.md` v2.0, `03-UI-DESIGN.md` v2.0, `04-SERVER-LAYER.md` v2.0 · Phiên bản: v2.0 · 2026-10-07
 >
-> Thư mục code: `src/app/(shop)/`. Đường dẫn tiếng Việt không dấu. Giao diện mobile-first (thiết kế từ 360px). Màu, font, component và wireframe từng trang: xem `03-UI-DESIGN.md`.
+> Thư mục code: `src/app/(shop)/`. Mobile-first (từ 360px). Wireframe ở `03` mục 9. **S** = Server Component · **C** = Client Component.
 >
-> Cột “API” tham chiếu tên hàm trong `04`. **S** = Server Component · **C** = Client Component.
+> Mục tiêu mọi trang: khách **thấy món ngon → biết giá → đặt món hoặc gọi tiệm** trong ít bước nhất.
 
 ---
 
@@ -12,233 +12,220 @@
 
 | # | Màn hình | Đường dẫn | Ưu tiên |
 |---|---|---|---|
-| S0 | Khung chung (header, footer, nút chat) | layout `(shop)` | P0 |
+| S0 | Khung chung (header, footer, nút liên hệ nổi) | layout `(shop)` | P0 |
 | S1 | Trang chủ | `/` | P0 |
-| S2 | Tất cả sản phẩm | `/san-pham` | P0 |
-| S3 | Danh mục | `/danh-muc/[slug]` | P0 |
-| S4 | Bộ sưu tập | `/bo-suu-tap/[slug]` | P0 |
-| S5 | Kết quả tìm kiếm | `/tim-kiem?q=` | P0 |
-| S6 | Chi tiết sản phẩm | `/san-pham/[slug]` | P0 |
-| S7 | Giỏ hàng | `/gio-hang` | P0 |
-| S8 | Thanh toán | `/thanh-toan` | P0 |
-| S9 | Đặt hàng thành công | `/dat-hang-thanh-cong?code=` | P0 |
-| S10 | Tra cứu đơn hàng | `/tra-cuu-don` | P0 |
-| S11 | Trang tĩnh (5 trang) | `/gioi-thieu`, `/lien-he`, `/chinh-sach-doi-tra`, `/chinh-sach-van-chuyen`, `/chinh-sach-bao-mat` | P0 |
-| S12 | 404 / lỗi | `not-found.tsx`, `error.tsx` | P0 |
-| — | Tài khoản khách, yêu thích, blog | — | P2 |
+| S2 | Thực đơn | `/thuc-don` | P0 |
+| S3 | Thực đơn một danh mục | `/thuc-don/[slug]` | P0 |
+| S4 | Chi tiết món | `/mon/[slug]` | P0 |
+| S5 | Đặt món | `/dat-mon` | P0 |
+| S6 | Đã gửi yêu cầu | `/dat-mon/da-gui` | P0 |
+| S7 | Liên hệ | `/lien-he` | P0 |
+| S8 | Trang tĩnh | `/gioi-thieu`, `/chinh-sach-bao-mat` | P0 |
+| S9 | 404 / lỗi | `not-found.tsx`, `error.tsx` | P0 |
+| — | Tìm kiếm món | `/tim-kiem` | P1 |
+| — | Đặt tiệc / số lượng lớn | `/dat-tiec` | P2 |
 
-S2–S5 dùng **chung một khung danh sách sản phẩm** (mục 3), chỉ khác tiêu đề và bộ lọc mặc định.
+**Đã bỏ so với Lamora:** giỏ hàng, thanh toán, đặt hàng thành công, tra cứu đơn, bộ sưu tập, danh sách sản phẩm có lọc/sắp xếp/phân trang, chính sách đổi trả và vận chuyển.
 
 ---
 
 ## 2. S0 — Khung chung
 
-| Thành phần | Mô tả | Loại | API |
+| Thành phần | Mô tả | Loại | Nguồn |
 |---|---|---|---|
-| `AnnouncementBar` | Dải thông báo trên cùng: “Miễn phí ship đơn từ 800.000đ” (lấy từ config) | S | — |
-| `Header` | Logo, menu danh mục, ô tìm kiếm, biểu tượng giỏ hàng có số lượng | S + C | `listActiveCategories` |
-| `MobileMenu` | Menu trượt từ trái trên điện thoại | C | — |
-| `SearchBox` | Gõ ≥ 2 ký tự hiện tối đa 6 gợi ý; Enter → S5 | C | `searchSuggestions` |
-| `CartButton` | Đọc số lượng từ giỏ trên trình duyệt | C | — |
-| `Footer` | Thông tin shop, link trang tĩnh, mạng xã hội, giờ làm việc | S | config `site.ts` |
-| `ChatFloatingButtons` | Nút Zalo và Messenger nổi góc phải dưới | C | config `site.ts` |
+| `AnnouncementBar` | Dải thông báo tùy chọn (bật/tắt trong config) | S | `site.ts` |
+| `Header` | Logo, menu (Thực đơn · Giới thiệu · Liên hệ), `OpenStatus`, nút “Đặt món” luôn hiện | S + C | `site.ts` |
+| `MobileMenu` | Menu trượt trái + SĐT + giờ mở cửa | C | |
+| `OpenStatus` | “Đang mở cửa · đến 21:00”, tính **ở trình duyệt** theo giờ Việt Nam để trang cache được | C | `site.ts → OPENING_HOURS` |
+| `Footer` | Địa chỉ, giờ mở cửa, liên hệ, mạng xã hội, link trang tĩnh, thông tin hộ kinh doanh | S | `site.ts` |
+| `ContactFloatingButtons` | Gọi · Zalo · Telegram (ẩn nút chưa có link) | C | `site.ts` |
 
-**Kho giỏ hàng (`features/cart`)**: state phía trình duyệt lưu `[{ variantId, quantity }]` vào localStorage (có xử lý khi trình duyệt chặn lưu trữ). Các hàm: thêm, sửa số lượng, xóa dòng, xóa hết, đếm số lượng.
+**`src/config/site.ts`** (chủ tiệm điền thật trước ra mắt):
+```ts
+export const SITE = {
+  name: 'Bánh Mì Thanh Long',
+  tagline: 'Giòn rụm, nhân đầy mỗi sáng',
+  phone: '09xxxxxxxx',
+  zaloUrl: 'https://zalo.me/09xxxxxxxx',
+  telegramUrl: 'https://t.me/<username_tiem>',   // chat trực tiếp với tiệm
+  facebookUrl: '',
+  address: 'Số …, đường …, phường …, TP …',
+  googleMapsUrl: 'https://maps.app.goo.gl/…',
+  geo: { lat: 0, lng: 0 },                       // cho JSON-LD
+  businessInfo: 'Hộ kinh doanh … · MST …',
+  announcement: '',                              // để trống = ẩn dải thông báo
+};
+export const OPENING_HOURS = [                   // 0 = Chủ nhật
+  { days: [1, 2, 3, 4, 5, 6, 0], open: '06:00', close: '21:00' },
+];
+```
+
+**`src/config/ordering.ts`**: `MAX_QUANTITY_PER_LINE = 50`, `MAX_LINES = 20`, `MAX_DAYS_AHEAD = 7`, `DELIVERY_RADIUS_TEXT = 'trong bán kính 3 km'`, `CALLBACK_PROMISE = 'trong ít phút'`, `AUTO_RESET_AVAILABILITY = false`.
 
 ---
 
-## 3. S2–S5 — Danh sách sản phẩm
+## 3. S1 — Trang chủ
 
-| Màn hình | Tiêu đề & phần đầu trang | Bộ lọc cố định |
+| Khối (từ trên xuống) | Nội dung | Nguồn |
 |---|---|---|
-| S2 Tất cả sản phẩm | “Tất cả sản phẩm” | — |
-| S3 Danh mục | Tên + mô tả danh mục, danh mục con (nếu có) | `categorySlug` |
-| S4 Bộ sưu tập | Ảnh banner + tên + mô tả bộ sưu tập | `collectionSlug` |
-| S5 Tìm kiếm | “Kết quả cho ‘…’ (N sản phẩm)” | `q` |
+| `Hero` | Ảnh lớn, tagline, `OpenStatus`, nút “Đặt món” + “Xem thực đơn” | `site.ts` (P1: bảng `Banner`) |
+| `FeaturedMenu` | 4–8 món nổi bật dạng `MenuItemCard`; cuộn ngang trên điện thoại | `listFeaturedProducts` |
+| `CategoryShortcuts` | Ô ảnh từng danh mục → `/thuc-don/<slug>` | `listMenuCategories` |
+| `StoryTeaser` | Ảnh tiệm + 2–3 câu chuyện + link `/gioi-thieu` | `content/` |
+| `Promises` | 3 cam kết (bánh nướng mỗi sáng, pate & sốt nhà làm, gọi lại nhanh) | config |
+| `VisitUs` | `StoreInfoCard` + ảnh bản đồ tĩnh bấm mở Google Maps | `site.ts` |
 
-**Thành phần dùng chung**
-| Thành phần | Mô tả | Loại |
-|---|---|---|
-| `Breadcrumb` | Trang chủ › Danh mục › … | S |
-| `ProductFilters` | Lọc theo danh mục, màu (ô màu), khoảng giá. Trên điện thoại mở dạng bảng trượt từ dưới lên | C |
-| `ProductSort` | Mới nhất · Giá tăng dần · Giá giảm dần · Nổi bật | C |
-| `ActiveFilterChips` | Các bộ lọc đang chọn, bấm × để bỏ | C |
-| `ProductGrid` | 2 cột điện thoại, 3 cột tablet, 4 cột máy tính | S |
-| `ProductCard` | Ảnh, tên, giá từ, giá gạch ngang, nhãn “Hết hàng”, ô màu | S |
-| `Pagination` | 24 sản phẩm/trang | S |
+Trang render tĩnh, cache theo tag `products`, `categories`.
 
-**Dữ liệu:** sản phẩm luôn lấy qua `listProducts` (truyền `categorySlug` / `collectionSlug` / `q`); S3 thêm `getCategoryBySlug`, S4 thêm `getCollectionBySlug` để lấy tiêu đề, mô tả, SEO.
+---
+
+## 4. S2, S3 — Thực đơn
+
+| Thành phần | Mô tả | Loại | Nguồn |
+|---|---|---|---|
+| `MenuHeader` | Tiêu đề + “Giá tham khảo, chưa gồm phí giao” | S | |
+| `CategoryTabs` | Tab dính dưới header, bấm cuộn tới khối danh mục (S2) hoặc chuyển trang (S3) | C | |
+| `MenuSection` | Mỗi danh mục: tiêu đề `h2` + mô tả + danh sách món | S | `getMenu` |
+| `MenuRow` / `MenuItemCard` | Điện thoại dạng dòng gọn; máy tính lưới 3 cột. Có giá, nhãn, “Tạm hết”, nút `+` → `/dat-mon?mon=<slug>` | S | |
 
 **Quy tắc**
-- Bộ lọc, sắp xếp, trang đều nằm trên URL (`?mau=hong&gia=200000-500000&sap-xep=gia-tang&trang=2`) để chia sẻ link được và trình duyệt quay lại đúng chỗ.
-- Trạng thái rỗng: “Chưa có sản phẩm phù hợp” + nút “Xóa bộ lọc”.
-- Slug không tồn tại → 404.
-- SEO: S3, S4 có metadata riêng; S5 đặt `noindex`.
+- Món “Tạm hết” vẫn hiện (khách biết tiệm có món này), không có nút `+`.
+- Danh mục không có món đang bán → ẩn.
+- S3 slug không tồn tại → 404. S3 có metadata riêng (“Đồ uống | Bánh Mì Thanh Long”).
+- JSON-LD `Menu` (`08` mục 11).
 
 ---
 
-## 4. S1 — Trang chủ
+## 5. S4 — Chi tiết món
 
-| Khối (từ trên xuống) | Nội dung | API |
-|---|---|---|
-| `HeroBanner` | 1 ảnh lớn + tiêu đề + nút “Xem bộ sưu tập”. P0 lấy từ config; P1 chuyển sang bảng Banner | — |
-| `CategoryShortcuts` | Các danh mục dạng ô ảnh tròn/vuông, cuộn ngang trên điện thoại | `listActiveCategories` |
-| `FeaturedProducts` | “Sản phẩm nổi bật”, 8 sản phẩm | `listFeaturedProducts` |
-| `CollectionSections` | Mỗi bộ sưu tập `showOnHome` một khối: tiêu đề + dải sản phẩm cuộn ngang + “Xem tất cả” | `listHomeCollections` |
-| `BrandPromise` | 4 cam kết: hoa lụa cao cấp, thiệp lời nhắn miễn phí, giao toàn quốc, đổi trả 7 ngày | config |
-| `InstagramStrip` *(P2)* | Ảnh mạng xã hội | — |
-
----
-
-## 5. S6 — Chi tiết sản phẩm
-
-| Thành phần | Mô tả | Loại | API |
+| Thành phần | Mô tả | Loại | Nguồn |
 |---|---|---|---|
-| `Breadcrumb` | | S | |
-| `ProductGallery` | Ảnh lớn + ảnh nhỏ; vuốt trên điện thoại; bấm để phóng to. Chọn màu → chuyển tới ảnh của màu đó | C | |
-| `ProductInfo` | Tên, giá (đổi theo biến thể), giá gạch ngang, mô tả ngắn | S | `getProductBySlug` |
-| `VariantSelector` | Chọn màu (ô màu) và kích thước. Biến thể hết hàng bị làm mờ, không chọn được | C | |
-| `QuantityInput` | 1 → tồn kho tối đa (≤ 99) | C | |
-| `AddToCartButton` | “Thêm vào giỏ” → hiện thông báo + mở giỏ nhỏ; nút phụ “Mua ngay” → tới S8 | C | |
-| `StickyBuyBar` | Trên điện thoại: thanh giá + nút mua dính ở đáy màn hình | C | |
-| `ProductDetailsAccordion` | Mô tả · Chất liệu & bảo quản · Giao hàng & đổi trả (dạng accordion, `03` mục 9.4) | S | |
-| `ChatToOrder` | “Cần tư vấn? Nhắn Zalo” | S | |
-| `RelatedProducts` | 4 sản phẩm cùng danh mục | S | `listRelatedProducts` |
+| `Breadcrumb` | Thực đơn › Danh mục › Món | S | |
+| `ProductGallery` | Ảnh 4:3, vuốt trên điện thoại | C | |
+| `ProductInfo` | Tên, nhãn, giá (“Từ …” nếu nhiều lựa chọn), mô tả ngắn | S | `getProductBySlug` |
+| `OptionPicker` | `RadioCards` các lựa chọn + giá. Ẩn nếu chỉ 1 lựa chọn | C | |
+| `QuantityStepper` | 1 → 50 | C | |
+| `OrderThisButton` | “Đặt món này” → `/dat-mon?mon=<slug>&loai=<optionId>&sl=<n>`. Món tạm hết: nút khóa + “Hôm nay tạm hết” + gợi ý gọi tiệm | C | |
+| `StickyOrderBar` | Điện thoại: giá + số lượng + nút dính đáy | C | |
+| `ProductDetailsAccordion` | Mô tả · Thành phần · Lưu ý dị ứng | S | |
+| `AskShop` | “Hỏi tiệm qua Zalo / Telegram” | S | `site.ts` |
+| `RelatedProducts` | 4 món cùng danh mục | S | `listRelatedProducts` |
 
-**SEO:** `generateMetadata` (tên, mô tả, ảnh), dữ liệu cấu trúc `Product` (JSON-LD) có giá và tình trạng còn hàng.
+SEO: `generateMetadata` (tên, mô tả, ảnh) + JSON-LD `MenuItem` có giá (`08` mục 11).
 
 ---
 
-## 6. S7 — Giỏ hàng
+## 6. S5 — Đặt món (trang quan trọng nhất)
 
-| Thành phần | Mô tả | Loại | API |
+Một trang, hai phần. Máy tính: chọn món bên trái, thông tin nhận món bên phải (dính khi cuộn). Điện thoại: chọn món → bấm “Tiếp tục” → cuộn tới thông tin (`03` mục 9.5).
+
+### 6.1 Phần chọn món
+| Thành phần | Mô tả | Loại | Nguồn |
 |---|---|---|---|
-| `CartLineList` | Ảnh, tên, biến thể, đơn giá, số lượng (+/−), thành tiền, nút xóa | C | `validateCart` |
-| `CartWarnings` | Cảnh báo từ server: hết hàng, không đủ số lượng, giá thay đổi, ngừng bán | C | |
-| `FreeShippingProgress` | “Mua thêm 150.000đ để được miễn phí ship” | C | config |
-| `CartSummary` | Tạm tính, ghi chú “Phí ship tính ở bước thanh toán”, nút “Thanh toán” | C | |
-| `EmptyCart` | Giỏ trống + nút “Tiếp tục mua sắm” | S | |
+| `OrderPicker` | Danh mục → món → mỗi lựa chọn có `[− 0 +]`. Món tạm hết hiện mờ, không bấm được | C | `getOrderableOptions` (truyền từ Server Component) |
+| `OrderBar` | Điện thoại: “3 phần · 75.000₫ (tham khảo)” + nút Tiếp tục; bấm mở danh sách đã chọn | C | |
 
-Ngoài trang này có `MiniCartDrawer`: ngăn trượt từ phải, hiện khi thêm sản phẩm, dùng chung `CartLineList` bản gọn.
+- Mở từ `?mon=<slug>&loai=<optionId>&sl=<n>` → chọn sẵn món đó và cuộn tới.
+- Lựa chọn đang chọn giữ trong state của trang (và `sessionStorage` để không mất khi lỡ tải lại). **Không** có giỏ hàng dùng chung toàn web.
 
-**Quy tắc:** mỗi lần mở trang và mỗi lần đổi số lượng đều gọi `validateCart`; giá hiển thị luôn là giá server trả về. Có dòng lỗi thì khóa nút “Thanh toán”.
-
----
-
-## 7. S8 — Thanh toán
-
-Một trang, chia khối từ trên xuống. Trên máy tính: form bên trái, tóm tắt đơn bên phải (dính khi cuộn).
-
-| Khối | Trường | API |
-|---|---|---|
-| 1. Người đặt | Họ tên*, Số điện thoại*, Email | |
-| 2. Quà tặng | Công tắc “Đây là quà tặng” → hiện: Tên người nhận*, SĐT người nhận*, Lời nhắn thiệp (đếm ký tự /300), Gói quà (+20.000đ) | |
-| 3. Địa chỉ giao | Tỉnh/thành* → Phường/xã* (ô chọn có tìm kiếm), Số nhà, đường* | `getAddressOptions` |
-| 4. Thời gian | Ngày muốn nhận (từ ngày mai đến +30 ngày), Ghi chú | |
-| 5. Thanh toán | COD · Chuyển khoản (VietQR). Mô tả ngắn dưới mỗi lựa chọn | |
-| `OrderSummary` | Danh sách sản phẩm gọn, tạm tính, phí ship (cập nhật khi chọn tỉnh), phí gói quà, tổng cộng | `validateCart`, `quoteShipping` |
-| Ô đồng ý | “Tôi đồng ý với Chính sách bảo mật và Điều khoản mua hàng” (bắt buộc, `08` Phần IV) | |
-| Nút “Đặt hàng” | Khóa khi đang gửi; lỗi hiện ngay tại trường tương ứng | `createOrder` |
+### 6.2 Phần thông tin nhận món
+| Trường | Quy tắc |
+|---|---|
+| Họ tên* | 2–60 ký tự |
+| Số điện thoại* | Số Việt Nam; chấp nhận `+84`, dấu cách; hiển thị lỗi thân thiện |
+| Cách nhận* | `RadioCards`: **Lấy tại quầy** (hiện địa chỉ tiệm) · **Giao tận nơi** (ghi chú: “{DELIVERY_RADIUS_TEXT}, phí giao tiệm báo khi gọi”) |
+| Địa chỉ giao* | Chỉ hiện và bắt buộc khi chọn giao. Ô chữ tự do, ≤ 200 ký tự |
+| Nhận lúc | **Sớm nhất** (mặc định) · **Hẹn giờ**: chọn ngày (hôm nay → +7 ngày) và giờ (bước 15 phút, chỉ trong giờ mở cửa) |
+| Ghi chú | “Không hành, ít cay, cắt đôi…”, ≤ 500 ký tự, đếm ký tự |
+| `OrderSummary` | Danh sách món, tạm tính, dòng “Giá tham khảo, chưa gồm phí giao. Tiệm sẽ gọi lại để chốt.” |
+| Ô đồng ý* | “Tôi đồng ý để tiệm dùng tên và SĐT để liên hệ về yêu cầu này (Chính sách bảo mật)” |
+| Nút | “Gửi yêu cầu đặt món” — khóa khi đang gửi và khi chưa chọn món |
+| Lối thoát | Dưới nút: “Hoặc gọi {SĐT} · Zalo · Telegram” |
 
 **Quy tắc**
-- Form dùng React Hook Form + schema Zod dùng chung với `createOrder`.
-- Giỏ trống → chuyển về S7.
-- Có trường ẩn `website` để bẫy bot.
-- Lỗi `CART_INVALID` → hiện danh sách dòng lỗi và link về giỏ hàng.
-- Đặt thành công → xóa giỏ, chuyển tới S9.
-- Nhớ thông tin người đặt và địa chỉ trên trình duyệt cho lần mua sau (P1).
+- Form dùng React Hook Form + schema Zod dùng chung với `createOrderRequest`.
+- Trường ẩn `website` (bẫy bot) và `startedAt`.
+- Ngoài giờ mở cửa: hiện dải `warning-700` “Tiệm đang nghỉ, mở lại lúc 6:00. Bạn vẫn gửi được, tiệm sẽ gọi lại khi mở cửa.”
+- Lỗi `ITEM_UNAVAILABLE`: đánh dấu dòng món bị lỗi ngay trong `OrderPicker`, giữ nguyên các trường đã nhập.
+- Thành công → xóa lựa chọn đã lưu, chuyển tới S6.
+- P1: nhớ tên + SĐT trên trình duyệt cho lần sau (có ô “Ghi nhớ thông tin”).
+- Trang `noindex`.
 
 ---
 
-## 8. S9 — Đặt hàng thành công
+## 7. S6 — Đã gửi yêu cầu
 
-| Thành phần | Mô tả | API |
+| Thành phần | Mô tả | Nguồn |
 |---|---|---|
-| `OrderSuccessHeader` | “Cảm ơn bạn! Mã đơn: LMR-…” + nút sao chép mã | `getOrderConfirmation` |
-| `BankTransferBox` | Chỉ hiện với đơn chuyển khoản: ảnh QR, ngân hàng, số tài khoản, chủ tài khoản, số tiền, nội dung chuyển khoản (đều có nút sao chép) | `getBankTransferInfo` |
-| `OrderRecap` | Sản phẩm, địa chỉ giao, tổng tiền | |
-| `NextSteps` | “Shop sẽ gọi xác nhận trong giờ làm việc”, link tra cứu đơn, nút nhắn Zalo | |
+| `RequestSentHeader` | “Thanh Long đã nhận yêu cầu của bạn” + mã `TL-…` + nút sao chép | `getRequestConfirmation` |
+| `CallbackNotice` | “Tiệm sẽ gọi số 0912***678 {CALLBACK_PROMISE}”, hoặc thông báo ngoài giờ | |
+| `RequestRecap` | Món, cách nhận, giờ nhận, tạm tính | |
+| `UrgentContact` | “Cần gấp?” + nút Gọi · Zalo · Telegram | `site.ts` |
 
-Mở lại trang sau khi cookie xác nhận hết hạn → chuyển sang S10. Trang đặt `noindex`.
+Không có cookie hợp lệ (mở lại sau 2 giờ, hoặc mở trên máy khác) → chỉ hiện lời cảm ơn chung + nút liên hệ. Trang `noindex`.
 
 ---
 
-## 9. S10 — Tra cứu đơn hàng
+## 8. S7 — Liên hệ
 
-| Thành phần | Mô tả | API |
+| Thành phần | Mô tả | Nguồn |
 |---|---|---|
-| `OrderLookupForm` | Mã đơn + Số điện thoại | `lookupOrder` |
-| `OrderStatusTimeline` | Các bước Chờ xác nhận → Đã xác nhận → Đang giao → Đã giao, kèm thời gian; đơn hủy hiện riêng | |
-| `OrderDetailCard` | Sản phẩm, tổng tiền, trạng thái thanh toán, đơn vị vận chuyển + mã vận đơn | |
-| `BankTransferBox` | Hiện lại nếu đơn chuyển khoản chưa thanh toán | `getBankTransferInfo` |
+| `StoreInfoCard` | Địa chỉ, giờ mở cửa từng ngày, `OpenStatus`, SĐT, Zalo, Telegram, Facebook | `site.ts` |
+| `MapEmbed` | Ảnh bản đồ tĩnh; bấm “Xem bản đồ” mới tải iframe Google Maps (giữ trang nhẹ) + nút “Chỉ đường” | `site.ts` |
+| `ContactForm` | Họ tên*, SĐT*, Nội dung*, ô đồng ý, nút Gửi. Thành công → toast “Tiệm đã nhận tin nhắn, sẽ liên hệ lại sớm” | `sendContactMessage` |
+| `OrderHint` | “Muốn đặt món? → Trang Đặt món” | |
 
-Không tìm thấy → “Không tìm thấy đơn. Kiểm tra lại mã đơn và số điện thoại”.
+JSON-LD `Restaurant`/`LocalBusiness` có giờ mở cửa và địa chỉ (`08` mục 11).
 
 ---
 
-## 10. S11 — Trang tĩnh
+## 9. S8 — Trang tĩnh
 
 | Trang | Nội dung |
 |---|---|
-| Giới thiệu | Câu chuyện Lamora Flower, ảnh, cam kết chất lượng |
-| Liên hệ | SĐT, Zalo, Messenger, email, giờ làm việc. P0 **không** có form liên hệ |
-| Chính sách đổi trả | Điều kiện, thời hạn, cách đổi |
-| Chính sách vận chuyển | Bảng phí theo vùng, thời gian giao dự kiến |
-| Chính sách bảo mật | Dữ liệu thu thập, mục đích, cách liên hệ để xóa |
+| Giới thiệu | Câu chuyện tiệm, người làm bánh, nguyên liệu, ảnh |
+| Chính sách bảo mật | Dữ liệu thu thập (tên, SĐT, địa chỉ giao), mục đích (liên hệ chốt món), thời gian lưu, cách yêu cầu xóa |
 
-Nội dung viết bằng Markdown trong `src/content/`, render chung một khung `StaticPageLayout`. Sửa nội dung không cần sửa code.
+Markdown trong `src/content/`, render bằng `StaticPageLayout` (giữ từ bản cũ).
 
 ---
 
-## 11. S12 — 404 và lỗi
+## 10. S9 — 404 và lỗi
 
-- `not-found.tsx`: “Không tìm thấy trang” + ô tìm kiếm + sản phẩm nổi bật.
-- `error.tsx`: “Có lỗi xảy ra” + nút “Thử lại” + nút nhắn Zalo.
-- `loading.tsx` cho S2–S6: khung xương (skeleton) đúng bố cục để trang không bị nhảy.
+- `not-found.tsx`: “Không tìm thấy trang” + món nổi bật + nút “Xem thực đơn”.
+- `error.tsx`: “Có trục trặc” + “Thử lại” + nút gọi tiệm.
+- `loading.tsx` cho S2–S4: khung xương đúng bố cục.
 
 ---
 
-## 12. Thứ tự code đề xuất
+## 11. Thứ tự code đề xuất
 
-| Bước | Việc | Phụ thuộc backend (`04` mục 14) |
+| Bước | Việc | Phụ thuộc (`04` mục 12) |
 |---|---|---|
-| F1 | S0 khung chung + kho giỏ hàng + các component UI cơ bản | A1–A3 |
-| F2 | `ProductCard`, `ProductGrid` + S2 (chưa lọc) | B5 |
-| F3 | S6 Chi tiết sản phẩm + thêm vào giỏ | B5 |
-| F4 | S7 Giỏ hàng + `MiniCartDrawer` | C2 |
-| F5 | S8 Thanh toán | C1, C3 |
-| F6 | S9 Đặt hàng thành công | C5 |
-| F7 | Bộ lọc, sắp xếp, phân trang; S3, S4, S5 | B1, B2, B5 |
-| F8 | S1 Trang chủ | B1, B2, B5 |
-| F9 | S10 Tra cứu đơn | C5 |
-| F10 | S11, S12, metadata SEO, JSON-LD, sitemap | — |
-| F11 | E2E Playwright: xem → thêm giỏ → đặt COD → tra cứu | Tất cả |
+| F1 | S0 khung chung mới (`site.ts`, `OpenStatus`, nút liên hệ nổi) | K4 |
+| F2 | `MenuItemCard`, `MenuRow` + S2, S3 | K2, K3 |
+| F3 | S4 chi tiết món | K2 |
+| F4 | S5 đặt món | K5 |
+| F5 | S6 đã gửi | K5 |
+| F6 | S7 liên hệ | K8 |
+| F7 | S1 trang chủ | K2, K3 |
+| F8 | S8, S9, metadata, JSON-LD, sitemap | — |
+| F9 | E2E: thực đơn → đặt món → đã gửi; liên hệ | Tất cả |
 
-Ưu tiên F1–F6 trước: xong 6 bước này là khách đã **đặt được đơn thật**.
+Xong F1–F5 là khách **đã gửi được yêu cầu đặt món thật** về Telegram.
 
 ---
 
-## 13. Cần xác nhận
-
-1. Có cần nút “Mua ngay” (bỏ qua giỏ hàng, vào thẳng thanh toán) không? Mặc định: **có**.
-2. Chính sách đổi trả: mặc định ghi **7 ngày**, bạn điều chỉnh khi viết nội dung trang.
+## 12. Cần xác nhận
+1. Địa chỉ, giờ mở cửa (có nghỉ ngày nào không, có nghỉ trưa không), SĐT, Zalo, username Telegram, link Google Maps.
+2. Có nhận giao tận nơi không, bán kính bao xa? Mặc định: có, 3 km.
+3. Cho hẹn giờ trước tối đa bao nhiêu ngày? Mặc định: 7 ngày.
 
 ---
-
-## Ghi chú triển khai F1 (2026-10-05)
-
-- Khung S0 đã có: thanh thông báo, header (co lại khi cuộn), menu di động, footer, nút chat nổi (ẩn khi chưa điền link trong `src/config/site.ts`).
-- Chưa làm (để đúng bước): mega menu → B1; gợi ý tìm kiếm → B5; giỏ nhỏ (drawer) → F4. Hiện biểu tượng giỏ chỉ hiển thị số lượng từ kho giỏ hàng (localStorage).
-- Thông tin liên hệ trong `src/config/site.ts` đang là giá trị tạm, chủ shop cần điền thật.
 
 ## Nhật ký thay đổi
 
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
-| v1.2 | 2026-10-05 | Làm rõ nguồn dữ liệu danh sách; thống nhất cam kết “thiệp lời nhắn miễn phí” |
-| v1.1 | 2026-10-05 | Đổi tab chi tiết sản phẩm sang accordion; thêm ô đồng ý chính sách ở trang thanh toán |
-| v1.0 | 2026-10-05 | Bản đầu tiên |
-
-> Ghi chú F3 (2026-10-06): chưa có phóng to ảnh khi bấm và `MiniCartDrawer` (làm ở F4); nút “Mua ngay” đi tới `/thanh-toan` (trang S8 làm ở F5, tới lúc đó sẽ báo 404). Mô tả sản phẩm hiển thị bằng bộ đọc Markdown nhỏ tự viết (`lib/markdown.ts`), không dùng thư viện ngoài.
-
-> Ghi chú F4 (2026-10-06): S7 và `MiniCartDrawer` đã làm. Giỏ kiểm tra lại với server khi mở và sau mỗi lần đổi số lượng (chờ 250ms); nút “Thanh toán” bị khóa khi có dòng hết hàng/ngừng bán hoặc chưa tải xong. Nút “Thêm vào giỏ” mở giỏ nhỏ thay vì hiện thông báo.
+| v2.0 | 2026-10-07 | Viết lại cho Bánh Mì Thanh Long: thực đơn, chi tiết món, đặt món, đã gửi, liên hệ có form; bỏ giỏ hàng, thanh toán, tra cứu đơn, bộ sưu tập, lọc/sắp xếp |
+| v1.2 | 2026-10-05 | (Lamora) |

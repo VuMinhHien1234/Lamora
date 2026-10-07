@@ -108,6 +108,15 @@ describe("updateProductImages", () => {
     expect(imageRepo.applyImageChanges).not.toHaveBeenCalled();
   });
 
+  it("đang bán chỉ có 1 ảnh: thêm ảnh mới trước rồi mới xóa ảnh cũ thì được phép", async () => {
+    vi.mocked(repo.findRecord).mockResolvedValue(product("ACTIVE"));
+    // Sau bước thêm ảnh mới, trong DB có ảnh cũ "a" và ảnh mới "n".
+    vi.mocked(imageRepo.findImages).mockResolvedValue([img("a", 0), img("n", 1)]);
+    await updateProductImages({ productId: "p1", images: [], deleteIds: ["a"] });
+    expect(imageRepo.applyImageChanges).toHaveBeenCalledWith("p1", [], ["a"]);
+    expect(media.deleteImage).toHaveBeenCalledWith("lamora/products/a");
+  });
+
   it("báo NOT_FOUND khi ảnh không thuộc sản phẩm", async () => {
     vi.mocked(imageRepo.findImages).mockResolvedValue(existing);
     await expect(

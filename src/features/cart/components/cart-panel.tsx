@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useSyncExternalStore, type ReactNode } from "react";
+import { ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "../cart-store";
 import { useCartValidation } from "../use-cart-validation";
@@ -68,11 +68,9 @@ function DrawerLayout({ list, summary, onNavigate }: LayoutProps) {
       <div className="flex flex-1 flex-col gap-4 px-5 py-4">{list}</div>
       <div className="sticky bottom-0 border-t border-sand-200 bg-ivory-50 px-5 py-5">
         {summary}
-        <p className="type-small mt-4 text-center">
-          <Link href="/gio-hang" onClick={onNavigate} className="underline underline-offset-4">
-            Xem giỏ hàng
-          </Link>
-        </p>
+        <ButtonLink href="/gio-hang" fullWidth onClick={onNavigate} className="mt-4">
+          Xem giỏ hàng
+        </ButtonLink>
       </div>
     </div>
   );
@@ -115,6 +113,7 @@ export function CartPanel({ active, variant, onNavigate }: CartPanelProps) {
       blocked={!data || hasUnavailable || failed}
       loading={loading}
       onNavigate={onNavigate}
+      showCheckout={variant !== "drawer"}
     />
   );
 

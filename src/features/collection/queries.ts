@@ -31,3 +31,9 @@ export async function adminGetCollection(id: string): Promise<CollectionDetail> 
 export function getCollectionBySlug(slug: string): Promise<CollectionRecord> {
   return service.findActiveBySlug(slug);
 }
+
+/** 🌐 Bộ sưu tập hiện ở trang chủ (`showOnHome`, đang bật). Sản phẩm của từng bộ lấy bằng `listProducts`. */
+export async function listHomeCollections(): Promise<CollectionRecord[]> {
+  const rows = await service.listHome();
+  return rows.map((row) => ({ ...row, imagePreviewUrl: preview(row.imagePublicId) }));
+}

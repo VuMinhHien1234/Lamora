@@ -11,7 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # AGENTS.md — Lamora Flower
 
 > File hướng dẫn cho **AI viết code** (Claude Code, Cursor, Codex, …) trong dự án website bán hoa lụa **Lamora Flower**.
-> Đọc **toàn bộ file này** trước mỗi phiên làm việc. Phiên bản: v1.13 · 2026-10-05 · Dựa trên `docs/00-MASTER-PLAN.md` v0.4.
+> Đọc **toàn bộ file này** trước mỗi phiên làm việc. Phiên bản: v1.14 · 2026-10-05 · Dựa trên `docs/00-MASTER-PLAN.md` v0.4.
 
 ---
 
@@ -43,6 +43,8 @@ Tài liệu là **nguồn sự thật**. Code phải khớp tài liệu; tài li
 | `docs/08-SECURITY-SEO.md` | Đăng nhập, chống spam, header, SEO, hiệu năng |
 | `docs/09-DEPLOYMENT.md` | Netlify, Neon, Cloudinary, CI/CD, sao lưu, cron |
 | `docs/10-TESTING-CHECKLIST.md` | Kiểm thử trước phát hành |
+| `docs/10-KET-QUA-KIEM-TRA.md` | Kết quả kiểm tra tự động (D3) và việc thủ công còn lại |
+| `docs/11-HUONG-DAN-TRIEN-KHAI.md` | Hướng dẫn chủ shop triển khai từng bước (D2) |
 
 **Thứ tự ưu tiên khi các nguồn mâu thuẫn**
 1. Yêu cầu bảo mật và toàn vẹn dữ liệu (tiền, đơn hàng, tồn kho) — không bao giờ hạ thấp.
@@ -141,23 +143,23 @@ Mã bước lấy từ `04` mục 14 (A, B, C), `05` mục 12 (F), `06` mục 13
   - [x] 5b F3 S6 chi tiết sản phẩm + thêm vào giỏ (bộ đọc Markdown tự viết, không thêm thư viện)
 - [x] **C1** Địa chỉ + phí ship (`07` mục 3)
 - [x] **C2 → F4** `validateCart` → S7 giỏ hàng + giỏ nhỏ
-- [ ] **C3 → F5** (C3 ✅ backend xong · F5 trang thanh toán chưa) `createOrder` → S8 thanh toán
-- [ ] **C5 → F6** Xác nhận đơn, VietQR (`07` mục 2) → S9
-- [ ] **C7** Telegram đơn mới + đăng nhập admin
+- [x] **C3 → F5** `createOrder` → S8 thanh toán
+- [x] **C5 → F6** Xác nhận đơn, VietQR (`07` mục 2) → S9
+- [x] **C7** Telegram đơn mới + đăng nhập admin
 
 ### Giai đoạn 4 — Xử lý đơn và hoàn thiện
-- [ ] **C4, C6 → G6, G7** Trạng thái đơn, thanh toán, hủy, hoàn → M3, M4
-- [ ] **C8 → G8** Tổng quan admin (M2), `/api/health`
-- [ ] **F7** Bộ lọc, sắp xếp, phân trang; S3, S4, S5
-- [ ] **F8** Trang chủ S1
-- [ ] **F9** Tra cứu đơn S10
-- [ ] **F10** Trang tĩnh, 404/lỗi, metadata, JSON-LD, sitemap, robots, header bảo mật (`08`)
-- [ ] **F11 + G9** E2E Playwright cho luồng khách và luồng admin
+- [x] **C4, C6 → G6, G7** Trạng thái đơn, thanh toán, hủy, hoàn → M3, M4
+- [x] **C8 → G8** Tổng quan admin (M2), `/api/health`
+- [x] **F7** Bộ lọc, sắp xếp, phân trang; S3, S4, S5
+- [x] **F8** Trang chủ S1
+- [x] **F9** Tra cứu đơn S10
+- [x] **F10** Trang tĩnh, 404/lỗi, metadata, JSON-LD, sitemap, robots, header bảo mật (`08`)
+- [x] **F11 + G9** E2E Playwright cho luồng khách và luồng admin
 
 ### Giai đoạn 5 — Triển khai
-- [ ] **D1** `netlify.toml`, workflow `backup`, `health`, `cron`, `dependabot` (`09` mục 9); route `/api/cron/*`
-- [ ] **D2** Hướng dẫn chủ shop từng bước thiết lập Netlify, Neon branch, biến môi trường (`09` mục 4) — bạn viết hướng dẫn, chủ shop bấm
-- [ ] **D3** Chạy checklist `10`, sửa lỗi mức Cao
+- [x] **D1** `netlify.toml`, workflow `backup`, `health`, `cron`, `dependabot` (`09` mục 9); route `/api/cron/*`
+- [x] **D2** Hướng dẫn chủ shop từng bước thiết lập Netlify, Neon branch, biến môi trường (`09` mục 4) — bạn viết hướng dẫn, chủ shop bấm
+- [x] **D3** Chạy checklist `10`, sửa lỗi mức Cao
 - [ ] **D4** Ra mắt `v0.1.0` (`10` mục 9)
 
 ---
@@ -330,3 +332,6 @@ Kiểm tra develop đã sẵn sàng gộp vào main chưa và báo các mục ch
 | v1.11 | 2026-10-06 | Xong C1: feature `shipping` (vùng, phí, mốc miễn phí, `getAddressOptions`, `quoteShipping`, `resolveAddress`), dữ liệu 34 tỉnh / 3.321 phường-xã trong `src/config/address` (nguồn NSO, ngày 2026-09-20), `config/shipping.ts` đầy đủ |
 | v1.12 | 2026-10-06 | Xong C2→F4: `validateCart` (giá/tồn kho lấy từ DB), trang `/gio-hang` (S7), giỏ nhỏ `MiniCartDrawer`, nút giỏ ở đầu trang và “Thêm vào giỏ” mở giỏ nhỏ |
 | v1.13 | 2026-10-06 | Xong C3 (backend): feature `order` với `createOrder` (transaction khóa dòng biến thể, tính tiền lại ở server, mã đơn `LMR-YYMMDD-XXXX`, trừ kho, chống spam 3 đơn/10 phút/IP, ô bẫy bot); thêm mã lỗi `CART_EMPTY`, `INVALID_ADDRESS`; `lib/phone.ts`, `vnDateString` |
+| v1.14 | 2026-10-06 | Xong F5 (S8 thanh toán, cài `react-hook-form` + `@hookform/resolvers` theo docs/05), C5→F6 (S9 `/dat-hang-thanh-cong`, cookie ký `lamora_order` 1 giờ, `getOrderConfirmation`, feature `payment` với `getBankTransferInfo` + VietQR), C7 (Telegram đơn mới + báo đăng nhập admin, `lib/telegram.ts`); thêm `CopyButton` vào docs/03 và ui-kit |
+| v1.15 | 2026-10-06 | Xong C4, C6 → G6, G7 (trạng thái đơn, thanh toán, hủy, hoàn hàng, sửa giao hàng, ghi chú, lịch sử; M3 danh sách đơn, M4 chi tiết đơn) và C8 → G8 (`getAdminSummary`, `/api/health`, M2 tổng quan) |
+| v1.16 | 2026-10-06 | Xong F7–F11 + G9, D1 (Netlify, workflow, cron cleanup), D2 (docs/11), D3 (docs/10-KET-QUA-KIEM-TRA.md), thêm Google Analytics tùy chọn (`NEXT_PUBLIC_GA_ID`). D4 chuẩn bị `CHANGELOG.md`, chờ chủ shop yêu cầu gắn tag. |

@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/toast";
 import { createProduct, updateProduct, upsertVariants } from "../actions";
 import type { ProductDetail } from "../types";
 import { emptyGeneral, generalFromProduct, type GeneralValues } from "./general-form";
+import { useImagesEditor, type ImagesEditorState } from "./use-images-editor";
 import {
   emptyRow,
   rowsFromRecords,
@@ -47,6 +48,36 @@ async function persist(
   return saved.ok ? { ok: true, id: productId } : { ok: false, error: saved.error };
 }
 
+function useWarnOnLeave(dirty: boolean): void {
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent): void => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+}
+
+type FinishInput = {
+  id: string;
+  isNew: boolean;
+  images: ImagesEditorState;
+  router: ReturnType<typeof useRouter>;
+  toast: ReturnType<typeof useToast>;
+};
+
+/** Sau khi lưu thông tin: lưu ảnh, rồi quay về danh sách. Trả về lỗi nếu ảnh chưa lưu được. */
+async function finishSave(input: FinishInput): Promise<string | undefined> {
+  const imageError = await input.images.commit(input.id);
+  if (imageError) {
+    // Sản phẩm mới đã được tạo: chuyển sang trang sửa để thử lại, tránh tạo trùng.
+    if (input.isNew) input.router.push(`/admin/san-pham/${input.id}`);
+    return `Đã lưu thông tin sản phẩm nhưng chưa lưu được ảnh: ${imageError}`;
+  }
+  input.toast(input.isNew ? "Đã tạo sản phẩm ở trạng thái Nháp" : "Đã lưu sản phẩm");
+  input.router.push("/admin/san-pham");
+  return undefined;
+}
+
 /** Trạng thái và thao tác của form thêm/sửa sản phẩm. */
 export function useProductEditor(product: ProductDetail | null) {
   const router = useRouter();
@@ -59,14 +90,9 @@ export function useProductEditor(product: ProductDetail | null) {
   const [errors, setErrors] = useState<SplitErrors>({ general: {}, variants: {} });
   const [topError, setTopError] = useState<string>();
   const [saving, setSaving] = useState(false);
-  const dirty = JSON.stringify({ general, rows }) !== JSON.stringify(saved);
-
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (event: BeforeUnloadEvent): void => event.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  const images = useImagesEditor(product?.images ?? []);
+  const dirty = JSON.stringify({ general, rows }) !== JSON.stringify(saved) || images.dirty;
+  useWarnOnLeave(dirty);
 
   const makeKey = (): string => `new-${(counter.current += 1)}`;
 
@@ -78,17 +104,29 @@ export function useProductEditor(product: ProductDetail | null) {
     const result = await persist(product?.id ?? null, { general, rows }, () =>
       setSaved((s) => ({ ...s, general })),
     );
-    setSaving(false);
     if (!result.ok) {
+      setSaving(false);
       setErrors(splitFieldErrors(result.error?.fieldErrors));
       setTopError(result.error?.message ?? "Có lỗi xảy ra, vui lòng thử lại.");
       return;
     }
     setSaved({ general, rows });
-    toast(product ? "Đã lưu sản phẩm" : "Đã tạo sản phẩm ở trạng thái Nháp");
-    if (product) router.refresh();
-    else router.push(`/admin/san-pham/${result.id}`);
+    const error = await finishSave({ id: result.id ?? "", isNew: !product, images, router, toast });
+    setSaving(false);
+    if (error) setTopError(error);
   }
 
-  return { general, setGeneral, rows, setRows, errors, topError, saving, dirty, makeKey, save };
+  return {
+    general,
+    setGeneral,
+    rows,
+    setRows,
+    errors,
+    topError,
+    saving,
+    dirty,
+    makeKey,
+    save,
+    images,
+  };
 }

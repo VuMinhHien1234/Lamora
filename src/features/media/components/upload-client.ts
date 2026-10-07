@@ -30,7 +30,12 @@ export async function compressIfNeeded(file: File): Promise<File> {
 }
 
 function readResult(text: string): UploadedImage {
-  const data = JSON.parse(text) as { public_id?: unknown; width?: unknown; height?: unknown };
+  const data = JSON.parse(text) as {
+    public_id?: unknown;
+    width?: unknown;
+    height?: unknown;
+    secure_url?: unknown;
+  };
   if (
     typeof data.public_id !== "string" ||
     typeof data.width !== "number" ||
@@ -38,7 +43,11 @@ function readResult(text: string): UploadedImage {
   ) {
     throw new Error("Cloudinary trả về dữ liệu không như mong đợi.");
   }
-  return { publicId: data.public_id, width: data.width, height: data.height };
+  const previewUrl =
+    typeof data.secure_url === "string"
+      ? data.secure_url.replace("/upload/", "/upload/f_auto,q_auto,w_240/")
+      : undefined;
+  return { publicId: data.public_id, width: data.width, height: data.height, previewUrl };
 }
 
 /** Tải ảnh thẳng lên Cloudinary (có thanh tiến trình). Dùng XMLHttpRequest vì fetch chưa báo tiến trình tải lên. */

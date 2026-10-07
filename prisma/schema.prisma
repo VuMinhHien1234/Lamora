@@ -296,6 +296,10 @@ model OrderItem {
   unitPrice     Int
   quantity      Int
   lineTotal     Int
+  /// Lời nhắn thiệp riêng của dòng hàng này (mỗi sản phẩm một thiệp).
+  cardMessage   String?
+  /// Dòng này có gói quà (phí tính theo dòng).
+  giftWrap      Boolean         @default(false)
 
   @@index([orderId])
 }

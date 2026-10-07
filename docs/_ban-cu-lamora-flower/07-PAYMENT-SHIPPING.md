@@ -214,3 +214,5 @@ Mở đơn: https://<tên-miền>/admin/don-hang/<id>
 | v1.0 | 2026-10-05 | Bản đầu tiên |
 
 > Ghi chú C1 (2026-10-06): mã tỉnh là mã NSO 2 chữ số (`01` Hà Nội…), mã phường/xã 5 chữ số. Vùng `NORTH` liệt kê bằng mã trong `config/shipping.ts` (`NORTH_PROVINCE_CODES`), có test đối chiếu tên với bảng ở mục 3.2. Nguồn dữ liệu địa chỉ ghi ở `src/config/address/README.md`. `resolveAddress(provinceCode, wardCode)` kiểm tra phường/xã đúng tỉnh và trả tên đầy đủ để `createOrder` chụp vào đơn.
+
+> Ghi chú C5/C7 (2026-10-06): `buildVietQrUrl` đặt ở `features/payment/service.ts`; tên ngân hàng hiển thị lấy từ bảng `src/config/banks.ts` theo mã BIN (20 ngân hàng phổ biến, thiếu thì hiện “Ngân hàng”). Telegram gửi qua `lib/telegram.ts` (timeout 5 giây, chỉ gửi khi `TELEGRAM_ENABLED=true` và đủ token + chat ID); tin “đơn mới” có SĐT khách nhưng không có địa chỉ chi tiết.

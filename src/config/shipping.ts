@@ -16,6 +16,8 @@ export const ESTIMATED_DELIVERY_DAYS: Record<ShippingZone, string> = {
 
 export const FREE_SHIPPING_THRESHOLD = 800_000;
 export const GIFT_WRAP_FEE = 20_000;
+/** Độ dài tối đa lời nhắn thiệp (dùng ở giỏ hàng, thanh toán và kiểm tra ở server). */
+export const GIFT_MESSAGE_MAX = 300;
 
 /** Mã tỉnh (NSO, 2 chữ số) của Hà Nội. */
 export const HANOI_PROVINCE_CODE = "01";

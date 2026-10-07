@@ -1,6 +1,13 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
-import type { OrderDraft, OrderVariantSnapshot, PlaceOrderResult, PlanResult } from "./types";
+import type {
+  ConfirmationRow,
+  LookupRow,
+  OrderDraft,
+  OrderVariantSnapshot,
+  PlaceOrderResult,
+  PlanResult,
+} from "./types";
 
 const MAX_CODE_ATTEMPTS = 5;
 
@@ -78,6 +85,80 @@ export function placeOrder(
     return {
       ok: true,
       order: { id: order.id, code, total: draft.total, paymentMethod: draft.paymentMethod },
+      draft,
     };
   });
+}
+
+export function findConfirmationByCode(code: string): Promise<ConfirmationRow | null> {
+  return db.order.findUnique({
+    where: { code },
+    select: {
+      code: true,
+      status: true,
+      paymentMethod: true,
+      paymentStatus: true,
+      subtotal: true,
+      shippingFee: true,
+      giftWrapFee: true,
+      total: true,
+      recipientName: true,
+      addressLine: true,
+      wardName: true,
+      provinceName: true,
+      preferredDeliveryDate: true,
+      isGift: true,
+      items: {
+        select: {
+          productName: true,
+          variantLabel: true,
+          quantity: true,
+          lineTotal: true,
+          imagePublicId: true,
+        },
+      },
+    },
+  });
+}
+
+export async function findLookupByCode(code: string): Promise<LookupRow | null> {
+  const row = await db.order.findUnique({
+    where: { code },
+    select: {
+      code: true,
+      status: true,
+      paymentMethod: true,
+      paymentStatus: true,
+      subtotal: true,
+      shippingFee: true,
+      giftWrapFee: true,
+      total: true,
+      recipientName: true,
+      addressLine: true,
+      wardName: true,
+      provinceName: true,
+      preferredDeliveryDate: true,
+      isGift: true,
+      customerPhone: true,
+      recipientPhone: true,
+      carrier: true,
+      trackingCode: true,
+      items: {
+        select: {
+          productName: true,
+          variantLabel: true,
+          quantity: true,
+          lineTotal: true,
+          imagePublicId: true,
+        },
+      },
+      statusHistory: {
+        orderBy: { createdAt: "asc" },
+        select: { toStatus: true, createdAt: true },
+      },
+    },
+  });
+  if (!row) return null;
+  const { statusHistory, ...rest } = row;
+  return { ...rest, history: statusHistory };
 }

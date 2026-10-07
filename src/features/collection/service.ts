@@ -61,6 +61,11 @@ export async function getAdminCollection(id: string): Promise<CollectionDetail> 
   return { ...collection, products: await repo.findProducts(id) };
 }
 
+/** Bộ sưu tập hiện ở trang chủ. */
+export function listHome(): Promise<CollectionRecord[]> {
+  return repo.findHome();
+}
+
 /** Bộ sưu tập đang bật theo slug (trang khách). */
 export async function findActiveBySlug(slug: string): Promise<CollectionRecord> {
   const found = await repo.findBySlug(slug);

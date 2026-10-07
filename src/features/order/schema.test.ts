@@ -2,11 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createOrderSchema } from "./schema";
 
 const valid = {
-  items: [{ variantId: "v1", quantity: 2 }],
+  items: [{ variantId: "v1", quantity: 2, giftWrap: false }],
   customer: { name: "Nguyễn An", phone: "0912 345 678", email: "" },
   isGift: false,
   address: { provinceCode: "01", wardCode: "00001", addressLine: "12 Phố Huế" },
-  giftWrap: false,
   paymentMethod: "COD",
 };
 
@@ -25,10 +24,16 @@ describe("createOrderSchema", () => {
     const many = Array.from({ length: 31 }, (_, i) => ({ variantId: `v${i}`, quantity: 1 }));
     expect(createOrderSchema.safeParse({ ...valid, items: many }).success).toBe(false);
     expect(
-      createOrderSchema.safeParse({ ...valid, items: [{ variantId: "v", quantity: 0 }] }).success,
+      createOrderSchema.safeParse({
+        ...valid,
+        items: [{ variantId: "v", quantity: 0, giftWrap: false }],
+      }).success,
     ).toBe(false);
     expect(
-      createOrderSchema.safeParse({ ...valid, items: [{ variantId: "v", quantity: 100 }] }).success,
+      createOrderSchema.safeParse({
+        ...valid,
+        items: [{ variantId: "v", quantity: 100, giftWrap: false }],
+      }).success,
     ).toBe(false);
   });
 
@@ -44,9 +49,11 @@ describe("createOrderSchema", () => {
   });
 
   it("giới hạn lời nhắn 300 và ghi chú 500 ký tự", () => {
-    expect(createOrderSchema.safeParse({ ...valid, giftMessage: "a".repeat(301) }).success).toBe(
-      false,
-    );
+    const longCard = {
+      ...valid,
+      items: [{ variantId: "v1", quantity: 1, cardMessage: "a".repeat(301) }],
+    };
+    expect(createOrderSchema.safeParse(longCard).success).toBe(false);
     expect(createOrderSchema.safeParse({ ...valid, customerNote: "a".repeat(501) }).success).toBe(
       false,
     );

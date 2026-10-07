@@ -17,14 +17,23 @@ export type PlanContext = {
   quote: (subtotal: number) => { zone: ShippingZone; shippingFee: number };
 };
 
-type Line = { variantId: string; quantity: number };
+type Line = { variantId: string; quantity: number; cardMessage: string | null; giftWrap: boolean };
 
-function mergeLines(items: Line[]): Line[] {
-  const merged = new Map<string, number>();
-  for (const { variantId, quantity } of items) {
-    merged.set(variantId, (merged.get(variantId) ?? 0) + quantity);
+type InputLine = { variantId: string; quantity: number; cardMessage?: string; giftWrap: boolean };
+
+/** Gộp các dòng trùng biến thể: cộng số lượng, giữ lời nhắn đầu tiên, gói quà nếu một dòng có gói. */
+function mergeLines(items: InputLine[]): Line[] {
+  const merged = new Map<string, Line>();
+  for (const { variantId, quantity, cardMessage, giftWrap } of items) {
+    const old = merged.get(variantId);
+    merged.set(variantId, {
+      variantId,
+      quantity: (old?.quantity ?? 0) + quantity,
+      cardMessage: old?.cardMessage ?? cardMessage ?? null,
+      giftWrap: (old?.giftWrap ?? false) || giftWrap,
+    });
   }
-  return [...merged].map(([variantId, quantity]) => ({ variantId, quantity }));
+  return [...merged.values()];
 }
 
 function label(variant: OrderVariantSnapshot): string | null {
@@ -48,7 +57,8 @@ function lineProblem(variant: OrderVariantSnapshot | undefined, quantity: number
   return null;
 }
 
-function toItem(variant: OrderVariantSnapshot, quantity: number): OrderItemDraft {
+function toItem(variant: OrderVariantSnapshot, line: Line): OrderItemDraft {
+  const { quantity } = line;
   return {
     productId: variant.product.id,
     variantId: variant.id,
@@ -59,6 +69,8 @@ function toItem(variant: OrderVariantSnapshot, quantity: number): OrderItemDraft
     unitPrice: variant.price,
     quantity,
     lineTotal: variant.price * quantity,
+    cardMessage: line.cardMessage,
+    giftWrap: line.giftWrap,
   };
 }
 
@@ -70,12 +82,13 @@ function buildItems(
   const byId = new Map(variants.map((v) => [v.id, v]));
   const items: OrderItemDraft[] = [];
   const errors: OrderLineError[] = [];
-  for (const { variantId, quantity } of lines) {
+  for (const line of lines) {
+    const { variantId, quantity } = line;
     const variant = byId.get(variantId);
     const message = lineProblem(variant, quantity);
     if (message || !variant)
       errors.push({ variantId, message: message ?? "Sản phẩm không còn bán." });
-    else items.push(toItem(variant, quantity));
+    else items.push(toItem(variant, line));
   }
   return { items, errors };
 }
@@ -91,8 +104,9 @@ export function planOrder(
 
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   const { zone, shippingFee } = ctx.quote(subtotal);
-  const wrap = input.isGift && input.giftWrap;
-  const giftWrapFee = wrap ? GIFT_WRAP_FEE : 0;
+  // Thiệp và gói quà tính theo từng dòng hàng, độc lập với "giao cho người khác".
+  const wrapCount = items.filter((item) => item.giftWrap).length;
+  const giftWrapFee = wrapCount * GIFT_WRAP_FEE;
   const recipient = input.isGift && input.recipient ? input.recipient : input.customer;
 
   const draft: OrderDraft = {
@@ -109,8 +123,9 @@ export function planOrder(
     addressLine: input.address.addressLine,
     shippingZone: zone,
     isGift: input.isGift,
-    giftMessage: input.isGift ? (input.giftMessage ?? null) : null,
-    giftWrap: wrap,
+    // Lời nhắn nằm ở từng dòng hàng; cột của đơn chỉ cho biết "có gói quà" để tra cứu nhanh.
+    giftMessage: null,
+    giftWrap: wrapCount > 0,
     preferredDeliveryDate: ctx.deliveryDate ? new Date(`${ctx.deliveryDate}T00:00:00.000Z`) : null,
     customerNote: input.customerNote ?? null,
     subtotal,

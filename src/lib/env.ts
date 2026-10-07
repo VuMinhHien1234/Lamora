@@ -28,6 +28,13 @@ export const envSchema = z.object({
     .min(MIN_SECRET_LENGTH, `cần chuỗi ngẫu nhiên ≥ ${MIN_SECRET_LENGTH} ký tự`),
   NEXT_PUBLIC_SITE_URL: z.url("cần là địa chỉ website đầy đủ, ví dụ https://lamoraflower.vn"),
 
+  // Google Analytics (tùy chọn): để trống = không theo dõi gì
+  NEXT_PUBLIC_GA_ID: z
+    .string()
+    .regex(/^G-[A-Z0-9]+$/, "cần dạng G-XXXXXXXXXX")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+
   // Chỉ dùng khi seed tài khoản admin
   ADMIN_EMAIL: optionalText,
   ADMIN_INITIAL_PASSWORD: optionalText,

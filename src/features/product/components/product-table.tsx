@@ -32,49 +32,66 @@ function NameCell({ item }: { item: ProductListItem }) {
 const TH = "type-eyebrow px-3 py-3 text-left font-normal text-stone-500";
 const TD = "px-3 py-3 align-middle";
 
+function TableHead() {
+  return (
+    <thead>
+      <tr className="border-b border-sand-200">
+        <th className={TH}>Sản phẩm</th>
+        <th className={`${TH} text-right`}>Giá từ</th>
+        <th className={`${TH} text-right`}>Tồn kho</th>
+        <th className={`${TH} pl-8`}>Trạng thái</th>
+        <th className={`${TH} text-right`}>
+          <span className="sr-only">Thao tác</span>
+        </th>
+      </tr>
+    </thead>
+  );
+}
+
+function TableRow({ item }: { item: ProductListItem }) {
+  return (
+    <tr className="border-b border-sand-200 transition-colors duration-300 hover:bg-ivory-100">
+      <td className={TD}>
+        <NameCell item={item} />
+      </td>
+      <td className={`${TD} text-right`}>
+        <MoneyText amount={item.priceFrom} />
+      </td>
+      <td className={`${TD} text-right`}>
+        <StockText item={item} />
+        {/* Tạm tắt cùng khối biến thể:
+        <span className="type-small block whitespace-nowrap text-stone-500">
+          {item.variantCount} biến thể
+        </span> */}
+      </td>
+      <td className={`${TD} pl-8`}>
+        <StatusBadge kind="product" status={item.status} />
+        <span className="type-small mt-1 block whitespace-nowrap text-stone-500">
+          {formatDate(item.updatedAt)}
+        </span>
+      </td>
+      <td className={`${TD} text-right`}>
+        <ProductRowActions item={item} align="end" />
+      </td>
+    </tr>
+  );
+}
+
 /** Bảng cho màn hình rộng (≥ 768px). Điện thoại dùng ProductCards. */
 export function ProductTable({ items }: { items: ProductListItem[] }) {
   return (
-    <table className="hidden w-full border-collapse text-[0.875rem] md:table">
-      <thead>
-        <tr className="border-b border-sand-200">
-          <th className={TH}>Sản phẩm</th>
-          <th className={`${TH} text-right`}>Giá từ</th>
-          <th className={`${TH} text-right`}>Tồn kho</th>
-          <th className={TH}>Trạng thái</th>
-          <th className={TH}>
-            <span className="sr-only">Thao tác</span>
-          </th>
-        </tr>
-      </thead>
+    <table className="hidden w-full table-fixed border-collapse text-[0.875rem] md:table">
+      <colgroup>
+        <col />
+        <col className="w-28" />
+        <col className="w-28" />
+        <col className="w-36" />
+        <col className="w-56 xl:w-80" />
+      </colgroup>
+      <TableHead />
       <tbody>
         {items.map((item) => (
-          <tr
-            key={item.id}
-            className="border-b border-sand-200 transition-colors duration-300 hover:bg-ivory-100"
-          >
-            <td className={TD}>
-              <NameCell item={item} />
-            </td>
-            <td className={`${TD} text-right`}>
-              <MoneyText amount={item.priceFrom} />
-            </td>
-            <td className={`${TD} text-right`}>
-              <StockText item={item} />
-              <span className="type-small block whitespace-nowrap text-stone-500">
-                {item.variantCount} biến thể
-              </span>
-            </td>
-            <td className={TD}>
-              <StatusBadge kind="product" status={item.status} />
-              <span className="type-small mt-1 block whitespace-nowrap text-stone-500">
-                {formatDate(item.updatedAt)}
-              </span>
-            </td>
-            <td className={TD}>
-              <ProductRowActions item={item} />
-            </td>
-          </tr>
+          <TableRow key={item.id} item={item} />
         ))}
       </tbody>
     </table>
@@ -91,7 +108,7 @@ export function ProductCards({ items }: { items: ProductListItem[] }) {
             <NameCell item={item} />
             <StatusBadge kind="product" status={item.status} />
           </div>
-          <dl className="type-small mt-3 grid grid-cols-3 gap-2 text-stone-500">
+          <dl className="type-small mt-3 grid grid-cols-2 gap-2 text-stone-500">
             <div>
               <dt>Giá từ</dt>
               <dd className="text-ink-900">
@@ -104,10 +121,11 @@ export function ProductCards({ items }: { items: ProductListItem[] }) {
                 <StockText item={item} />
               </dd>
             </div>
+            {/* Tạm tắt cùng khối biến thể:
             <div>
               <dt>Biến thể</dt>
               <dd className="text-ink-900">{item.variantCount}</dd>
-            </div>
+            </div> */}
           </dl>
           <p className="type-small mt-2 text-stone-500">
             {item.categoryName} · Cập nhật {formatDate(item.updatedAt)}

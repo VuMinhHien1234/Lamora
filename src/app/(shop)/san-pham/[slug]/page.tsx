@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { BreadcrumbJsonLd, JsonLd } from "@/components/seo/json-ld";
 import {
   getProductBySlug,
   listRelatedProducts,
@@ -8,7 +9,6 @@ import {
   ProductDetailsAccordion,
   ProductGrid,
   buildProductJsonLd,
-  jsonLdString,
   type ShopProduct,
 } from "@/features/product";
 import { getEnv } from "@/lib/env";
@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const image = product.images.find((i) => i.url)?.url;
   return {
     title: product.seoTitle ?? product.name,
+    alternates: { canonical: `/san-pham/${product.slug}` },
     description: product.seoDescription ?? product.shortDescription ?? undefined,
     openGraph: { title: product.seoTitle ?? product.name, images: image ? [image] : undefined },
   };
@@ -39,15 +40,16 @@ export default async function ProductPage({ params }: PageProps) {
   const product = await loadProduct((await params).slug);
   const related = await listRelatedProducts(product.id);
   const jsonLd = buildProductJsonLd(product, getEnv().NEXT_PUBLIC_SITE_URL);
+  const crumbs = [
+    { label: "Trang chủ", href: "/" },
+    { label: "Sản phẩm", href: "/san-pham" },
+    { label: product.categoryName, href: `/danh-muc/${product.categorySlug}` },
+    { label: product.name },
+  ];
   return (
     <div className="page-container py-6 lg:py-10">
-      <Breadcrumb
-        items={[
-          { label: "Trang chủ", href: "/" },
-          { label: "Sản phẩm", href: "/san-pham" },
-          { label: product.categoryName },
-        ]}
-      />
+      <Breadcrumb items={crumbs} />
+      <BreadcrumbJsonLd items={crumbs} />
       <div className="mt-6">
         <ProductDetailView
           product={product}
@@ -60,10 +62,7 @@ export default async function ProductPage({ params }: PageProps) {
           <ProductGrid products={related} />
         </section>
       )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
     </div>
   );
 }

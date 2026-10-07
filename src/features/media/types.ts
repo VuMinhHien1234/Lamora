@@ -16,6 +16,8 @@ export type UploadedImage = {
   publicId: string;
   width: number;
   height: number;
+  /** Ảnh nhỏ để xem trước ngay sau khi tải (chưa lưu vào sản phẩm). */
+  previewUrl?: string;
 };
 
 export type CloudinaryCredentials = {

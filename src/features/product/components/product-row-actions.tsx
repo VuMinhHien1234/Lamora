@@ -5,9 +5,17 @@ import { ProductStatusSelect } from "./product-status-select";
 const LINK = "type-small link-underline inline-flex min-h-11 items-center";
 
 /** Sửa · Xem trên web (chỉ khi đang bán) · Đổi trạng thái. */
-export function ProductRowActions({ item }: { item: ProductListItem }) {
+export function ProductRowActions({
+  item,
+  align = "start",
+}: {
+  item: ProductListItem;
+  align?: "start" | "end";
+}) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+    <div
+      className={`flex flex-wrap items-center gap-x-4 gap-y-1 ${align === "end" ? "justify-end xl:flex-nowrap" : ""}`}
+    >
       <Link href={`/admin/san-pham/${item.id}`} className={LINK}>
         Sửa
       </Link>

@@ -9,6 +9,8 @@ type CartSummaryProps = {
   blocked: boolean;
   loading: boolean;
   onNavigate?: () => void;
+  /** false ở giỏ nhỏ: khách phải xem lại giỏ hàng rồi mới thanh toán. */
+  showCheckout?: boolean;
   className?: string;
 };
 
@@ -17,6 +19,7 @@ export function CartSummary({
   blocked,
   loading,
   onNavigate,
+  showCheckout = true,
   className,
 }: CartSummaryProps) {
   return (
@@ -29,7 +32,7 @@ export function CartSummary({
         </span>
       </div>
       <p className="type-small text-stone-500">Phí vận chuyển được tính ở bước thanh toán.</p>
-      {blocked ? (
+      {!showCheckout ? null : blocked ? (
         <Button fullWidth disabled>
           Thanh toán
         </Button>

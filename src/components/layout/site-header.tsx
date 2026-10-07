@@ -3,13 +3,15 @@
 import { Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { MAIN_NAV } from "@/config/site";
+import type { NavLink } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { CartButton } from "./cart-button";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 
 const SCROLL_THRESHOLD_PX = 8;
+/** Máy tính chỉ đủ chỗ cho 3 mục; các mục còn lại nằm trong menu trượt và chân trang. */
+const MAX_DESKTOP_LINKS = 3;
 
 function useScrolled(): boolean {
   const [scrolled, setScrolled] = useState(false);
@@ -22,8 +24,24 @@ function useScrolled(): boolean {
   return scrolled;
 }
 
+function DesktopNav({ links }: { links: NavLink[] }) {
+  return (
+    <nav aria-label="Menu chính" className="hidden items-center gap-6 lg:flex xl:gap-8">
+      {links.slice(0, MAX_DESKTOP_LINKS).map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className="type-eyebrow link-underline py-1 whitespace-nowrap"
+        >
+          {link.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
 /** Header dính: logo ở giữa, menu bên trái, tìm kiếm + giỏ bên phải. Cao 88px → 64px khi cuộn (máy tính). */
-export function SiteHeader() {
+export function SiteHeader({ navLinks }: { navLinks: NavLink[] }) {
   const scrolled = useScrolled();
   const [menuOpen, setMenuOpen] = useState(false);
   return (
@@ -44,17 +62,11 @@ export function SiteHeader() {
             type="button"
             aria-label="Mở menu"
             onClick={() => setMenuOpen(true)}
-            className="-ml-3 grid size-11 place-items-center md:hidden"
+            className="-ml-3 grid size-11 place-items-center lg:hidden"
           >
             <Menu aria-hidden strokeWidth={1.25} className="size-5" />
           </button>
-          <nav aria-label="Menu chính" className="hidden items-center gap-8 md:flex">
-            {MAIN_NAV.map((link) => (
-              <Link key={link.label} href={link.href} className="type-eyebrow link-underline py-1">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          <DesktopNav links={navLinks} />
         </div>
         <Link href="/" aria-label="Lamora Flower — trang chủ">
           <Logo />
@@ -66,7 +78,7 @@ export function SiteHeader() {
           <CartButton />
         </div>
       </div>
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileMenu links={navLinks} open={menuOpen} onClose={() => setMenuOpen(false)} />
     </header>
   );
 }

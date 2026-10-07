@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Drawer } from "@/components/ui/drawer";
 import { useToast } from "@/components/ui/toast";
@@ -82,6 +83,10 @@ export function KitOverlays() {
         >
           Thông báo lỗi
         </Button>
+      </KitRow>
+      <KitRow label="Nút sao chép (CopyButton)">
+        <span className="type-body">LMR-261005-K7QF</span>
+        <CopyButton value="LMR-261005-K7QF" what="mã đơn" />
       </KitRow>
       <ConfirmDemo />
     </KitSection>

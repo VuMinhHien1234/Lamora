@@ -8,7 +8,12 @@ export {
 } from "./actions";
 export { CollectionEditor } from "./components/collection-editor";
 export { CollectionManager } from "./components/collection-manager";
-export { adminGetCollection, adminListCollections, getCollectionBySlug } from "./queries";
+export {
+  adminGetCollection,
+  adminListCollections,
+  getCollectionBySlug,
+  listHomeCollections,
+} from "./queries";
 export type {
   CollectionDetail,
   CollectionProductItem,

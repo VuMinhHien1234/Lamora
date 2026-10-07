@@ -21,13 +21,11 @@ export function variant(
 
 export function orderInput(partial: Partial<CreateOrderInput> = {}): CreateOrderInput {
   return {
-    items: [{ variantId: "v1", quantity: 1 }],
+    items: [{ variantId: "v1", quantity: 1, giftWrap: false }],
     customer: { name: "Nguyễn An", phone: "0912345678", email: undefined },
     isGift: false,
     recipient: undefined,
     address: { provinceCode: "01", wardCode: "00001", addressLine: "12 Phố Huế" },
-    giftMessage: undefined,
-    giftWrap: false,
     preferredDeliveryDate: undefined,
     customerNote: undefined,
     paymentMethod: "COD",

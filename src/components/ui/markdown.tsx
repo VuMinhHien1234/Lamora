@@ -12,10 +12,16 @@ function Inline({ nodes }: { nodes: InlineNode[] }) {
   );
 }
 
-function BlockView({ block }: { block: Block }) {
+type Variant = "compact" | "article";
+
+function BlockView({ block, variant }: { block: Block; variant: Variant }) {
   if (block.type === "heading") {
     return (
-      <h4 className="type-body font-medium text-ink-900">
+      <h4
+        className={
+          variant === "article" ? "type-h3 mt-4 text-ink-900" : "type-body font-medium text-ink-900"
+        }
+      >
         <Inline nodes={block.inline} />
       </h4>
     );
@@ -40,11 +46,11 @@ function BlockView({ block }: { block: Block }) {
 }
 
 /** Hiển thị văn bản Markdown cơ bản (đoạn, tiêu đề, danh sách, đậm/nghiêng). Không cho HTML thô. */
-export function Markdown({ source }: { source: string }) {
+export function Markdown({ source, variant = "compact" }: { source: string; variant?: Variant }) {
   return (
-    <div className="grid gap-3">
+    <div className={variant === "article" ? "type-body grid gap-4 leading-relaxed" : "grid gap-3"}>
       {parseMarkdown(source).map((block, index) => (
-        <BlockView key={index} block={block} />
+        <BlockView key={index} block={block} variant={variant} />
       ))}
     </div>
   );
