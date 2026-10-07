@@ -4,8 +4,14 @@
 [build]
   # Áp migration (tương thích ngược) rồi build. DIRECT_URL là bản kết nối trực tiếp của Neon.
   command = "pnpm prisma migrate deploy && pnpm build"
+  publish = ".next"
   # Bỏ qua build khi chỉ sửa tài liệu/CI (tiết kiệm credits, docs/09 mục 2.1). Thoát 0 = bỏ qua build.
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)docs' ':(exclude)*.md' ':(exclude).github' ':(exclude)e2e'"
+
+# Chạy Next.js trên Netlify: cài runtime chính thức của Netlify (miễn phí) và đặt thư mục phát hành `.next`.
+# Không có hai dòng này thì Netlify chỉ phát hành thư mục trống và web báo 404.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [build.environment]
   # Phiên bản Node lấy từ .nvmrc; pnpm lấy từ trường packageManager trong package.json.
