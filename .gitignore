@@ -33,6 +33,7 @@ yarn-error.log*
 # env files: chỉ commit .env.example
 .env*
 !.env.example
+.env.production.local
 
 # netlify
 .netlify
