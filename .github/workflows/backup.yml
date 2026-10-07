@@ -40,7 +40,7 @@ jobs:
           rm "lamora-${STAMP}.dump"
           ls -la
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: lamora-backup
           path: "lamora-*.dump.gpg"
