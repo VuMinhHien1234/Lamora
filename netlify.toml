@@ -12,3 +12,9 @@
   NEXT_TELEMETRY_DISABLED = "1"
 
 # Header bảo mật đặt trong next.config.ts (docs/08 mục 5) nên không lặp lại ở đây.
+[build]
+  command = "pnpm prisma migrate deploy && pnpm build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
