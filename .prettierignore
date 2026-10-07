@@ -1,0 +1,16 @@
+node_modules
+.next
+.netlify
+out
+build
+coverage
+playwright-report
+test-results
+pnpm-lock.yaml
+next-env.d.ts
+public
+prisma/migrations
+src/generated
+# Tài liệu và Markdown giữ nguyên cách trình bày (bảng tiếng Việt)
+docs
+*.md

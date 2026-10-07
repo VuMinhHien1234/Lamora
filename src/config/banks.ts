@@ -1,0 +1,23 @@
+// Tên ngân hàng theo mã BIN (dùng cho VietQR). Không thấy mã → chỉ hiện "Ngân hàng".
+export const BANK_NAMES: Readonly<Record<string, string>> = {
+  "970403": "Sacombank",
+  "970405": "Agribank",
+  "970407": "Techcombank",
+  "970409": "Bac A Bank",
+  "970415": "VietinBank",
+  "970416": "ACB",
+  "970418": "BIDV",
+  "970422": "MB Bank",
+  "970423": "TPBank",
+  "970426": "MSB",
+  "970428": "Nam A Bank",
+  "970431": "Eximbank",
+  "970432": "VPBank",
+  "970436": "Vietcombank",
+  "970437": "HDBank",
+  "970440": "SeABank",
+  "970441": "VIB",
+  "970443": "SHB",
+  "970448": "OCB",
+  "970449": "LPBank",
+};

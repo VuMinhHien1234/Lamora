@@ -1,0 +1,12 @@
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+  esbuild: false
+  workerd: false
+  prisma: true
+  "@prisma/engines": true
+
+# better-auth kéo theo mysql2 (dự án dùng PostgreSQL nên không chạy tới), nhưng bản cũ bị báo lỗ hổng
+# ở `pnpm audit`. Ép dùng bản đã vá (>=3.23.1).
+overrides:
+  mysql2: ">=3.23.1"

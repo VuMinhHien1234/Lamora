@@ -1,0 +1,14 @@
+# Cấu hình Netlify (docs/09 mục 4.2 và 9). Biến môi trường KHÔNG để ở đây: nhập trên Netlify
+# (Site configuration → Environment variables) theo từng ngữ cảnh Production / Deploy Previews.
+
+[build]
+  # Áp migration (tương thích ngược) rồi build. DIRECT_URL là bản kết nối trực tiếp của Neon.
+  command = "pnpm prisma migrate deploy && pnpm build"
+  # Bỏ qua build khi chỉ sửa tài liệu/CI (tiết kiệm credits, docs/09 mục 2.1). Thoát 0 = bỏ qua build.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)docs' ':(exclude)*.md' ':(exclude).github' ':(exclude)e2e'"
+
+[build.environment]
+  # Phiên bản Node lấy từ .nvmrc; pnpm lấy từ trường packageManager trong package.json.
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Header bảo mật đặt trong next.config.ts (docs/08 mục 5) nên không lặp lại ở đây.

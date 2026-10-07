@@ -1,0 +1,172 @@
+[
+  {
+    "code": "01",
+    "name": "Thành phố Hà Nội",
+    "nameAscii": "thanh pho ha noi"
+  },
+  {
+    "code": "04",
+    "name": "Tỉnh Cao Bằng",
+    "nameAscii": "tinh cao bang"
+  },
+  {
+    "code": "08",
+    "name": "Tỉnh Tuyên Quang",
+    "nameAscii": "tinh tuyen quang"
+  },
+  {
+    "code": "11",
+    "name": "Tỉnh Điện Biên",
+    "nameAscii": "tinh dien bien"
+  },
+  {
+    "code": "12",
+    "name": "Tỉnh Lai Châu",
+    "nameAscii": "tinh lai chau"
+  },
+  {
+    "code": "14",
+    "name": "Tỉnh Sơn La",
+    "nameAscii": "tinh son la"
+  },
+  {
+    "code": "15",
+    "name": "Tỉnh Lào Cai",
+    "nameAscii": "tinh lao cai"
+  },
+  {
+    "code": "19",
+    "name": "Tỉnh Thái Nguyên",
+    "nameAscii": "tinh thai nguyen"
+  },
+  {
+    "code": "20",
+    "name": "Tỉnh Lạng Sơn",
+    "nameAscii": "tinh lang son"
+  },
+  {
+    "code": "22",
+    "name": "Tỉnh Quảng Ninh",
+    "nameAscii": "tinh quang ninh"
+  },
+  {
+    "code": "24",
+    "name": "Tỉnh Bắc Ninh",
+    "nameAscii": "tinh bac ninh"
+  },
+  {
+    "code": "25",
+    "name": "Tỉnh Phú Thọ",
+    "nameAscii": "tinh phu tho"
+  },
+  {
+    "code": "31",
+    "name": "Thành phố Hải Phòng",
+    "nameAscii": "thanh pho hai phong"
+  },
+  {
+    "code": "33",
+    "name": "Tỉnh Hưng Yên",
+    "nameAscii": "tinh hung yen"
+  },
+  {
+    "code": "37",
+    "name": "Tỉnh Ninh Bình",
+    "nameAscii": "tinh ninh binh"
+  },
+  {
+    "code": "38",
+    "name": "Tỉnh Thanh Hóa",
+    "nameAscii": "tinh thanh hoa"
+  },
+  {
+    "code": "40",
+    "name": "Tỉnh Nghệ An",
+    "nameAscii": "tinh nghe an"
+  },
+  {
+    "code": "42",
+    "name": "Tỉnh Hà Tĩnh",
+    "nameAscii": "tinh ha tinh"
+  },
+  {
+    "code": "44",
+    "name": "Tỉnh Quảng Trị",
+    "nameAscii": "tinh quang tri"
+  },
+  {
+    "code": "46",
+    "name": "Thành phố Huế",
+    "nameAscii": "thanh pho hue"
+  },
+  {
+    "code": "48",
+    "name": "Thành phố Đà Nẵng",
+    "nameAscii": "thanh pho da nang"
+  },
+  {
+    "code": "51",
+    "name": "Tỉnh Quảng Ngãi",
+    "nameAscii": "tinh quang ngai"
+  },
+  {
+    "code": "52",
+    "name": "Tỉnh Gia Lai",
+    "nameAscii": "tinh gia lai"
+  },
+  {
+    "code": "56",
+    "name": "Tỉnh Khánh Hòa",
+    "nameAscii": "tinh khanh hoa"
+  },
+  {
+    "code": "66",
+    "name": "Tỉnh Đắk Lắk",
+    "nameAscii": "tinh dak lak"
+  },
+  {
+    "code": "68",
+    "name": "Tỉnh Lâm Đồng",
+    "nameAscii": "tinh lam dong"
+  },
+  {
+    "code": "75",
+    "name": "Tỉnh Đồng Nai",
+    "nameAscii": "tinh dong nai"
+  },
+  {
+    "code": "79",
+    "name": "Thành phố Hồ Chí Minh",
+    "nameAscii": "thanh pho ho chi minh"
+  },
+  {
+    "code": "80",
+    "name": "Tỉnh Tây Ninh",
+    "nameAscii": "tinh tay ninh"
+  },
+  {
+    "code": "82",
+    "name": "Tỉnh Đồng Tháp",
+    "nameAscii": "tinh dong thap"
+  },
+  {
+    "code": "86",
+    "name": "Tỉnh Vĩnh Long",
+    "nameAscii": "tinh vinh long"
+  },
+  {
+    "code": "91",
+    "name": "Tỉnh An Giang",
+    "nameAscii": "tinh an giang"
+  },
+  {
+    "code": "92",
+    "name": "Thành phố Cần Thơ",
+    "nameAscii": "thanh pho can tho"
+  },
+  {
+    "code": "96",
+    "name": "Tỉnh Cà Mau",
+    "nameAscii": "tinh ca mau"
+  }
+]
