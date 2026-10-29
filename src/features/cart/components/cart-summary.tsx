@@ -1,6 +1,7 @@
 import { ButtonLink, Button } from "@/components/ui/button";
 import { formatVnd } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import { FreeShippingProgress } from "./free-shipping-progress";
 
 type CartSummaryProps = {
@@ -24,14 +25,18 @@ export function CartSummary({
 }: CartSummaryProps) {
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <FreeShippingProgress subtotal={subtotal} />
+      {SHIPPING_FEE_ENABLED && <FreeShippingProgress subtotal={subtotal} />}
       <div className="flex items-baseline justify-between">
         <span className="type-body">Tạm tính</span>
         <span className={cn("type-price transition-opacity", loading && "opacity-50")}>
           {formatVnd(subtotal)}
         </span>
       </div>
-      <p className="type-small text-stone-500">Phí vận chuyển được tính ở bước thanh toán.</p>
+      <p className="type-small text-stone-500">
+        {SHIPPING_FEE_ENABLED
+          ? "Phí vận chuyển được tính ở bước thanh toán."
+          : "Phí vận chuyển shop sẽ báo khi liên hệ xác nhận đơn."}
+      </p>
       {!showCheckout ? null : blocked ? (
         <Button fullWidth disabled>
           Thanh toán

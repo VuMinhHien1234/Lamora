@@ -1,3 +1,4 @@
+import { SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import { formatVnd } from "@/lib/money";
 import { formatDate } from "@/lib/date";
 import type { NewOrderNotice } from "./types";
@@ -53,7 +54,11 @@ function noteLines(order: NewOrderNotice): string[] {
 
 function totalLines(order: NewOrderNotice): string[] {
   const lines = [`Tạm tính: ${formatVnd(order.subtotal)}`];
-  lines.push(`Phí giao hàng: ${formatVnd(order.shippingFee)}`);
+  if (SHIPPING_FEE_ENABLED || order.shippingFee > 0) {
+    lines.push(`Phí giao hàng: ${formatVnd(order.shippingFee)}`);
+  } else {
+    lines.push("Phí giao hàng: chưa tính (báo khách khi liên hệ)");
+  }
   if (order.giftWrapFee > 0) lines.push(`Gói quà: ${formatVnd(order.giftWrapFee)}`);
   lines.push(`Tổng: ${formatVnd(order.total)} · ${paymentText(order.paymentMethod)}`);
   return lines;

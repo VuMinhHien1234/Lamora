@@ -14,6 +14,13 @@ export const ESTIMATED_DELIVERY_DAYS: Record<ShippingZone, string> = {
   CENTRAL_SOUTH: "3–5 ngày",
 };
 
+/**
+ * Bật/tắt việc tính và hiển thị phí giao hàng.
+ * false = web không tính phí ship (luôn 0đ) và không hiện dòng phí; shop báo phí khi liên hệ khách.
+ * Muốn bật lại: đổi thành true.
+ */
+export const SHIPPING_FEE_ENABLED = false;
+
 export const FREE_SHIPPING_THRESHOLD = 800_000;
 export const GIFT_WRAP_FEE = 20_000;
 /** Độ dài tối đa lời nhắn thiệp (dùng ở giỏ hàng, thanh toán và kiểm tra ở server). */

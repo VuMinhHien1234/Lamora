@@ -7,11 +7,11 @@ export const SITE = {
   description:
     "Lamora Flower — hoa lụa cao cấp, những đóa hoa dịu dàng và bền lâu cho căn nhà và những dịp đặc biệt của bạn.",
   contact: {
-    phone: "0900 000 000", // ĐIỀN: số điện thoại shop
+    phone: "0357829080", // ĐIỀN: số điện thoại shop
     email: "xinchao@lamoraflower.vn", // ĐIỀN
     hours: "08:00 – 21:00, mỗi ngày",
     address: "Hà Nội", // ĐIỀN: địa chỉ/khu vực hiển thị
-    zaloUrl: "", // ĐIỀN: ví dụ https://zalo.me/0900000000 (để trống thì ẩn nút Zalo)
+    zaloUrl: "https://zalo.me/0357829080", // ĐIỀN: ví dụ https://zalo.me/0900000000 (để trống thì ẩn nút Zalo)
     messengerUrl: "", // ĐIỀN: ví dụ https://m.me/ten-trang (để trống thì ẩn nút Messenger)
   },
   /** Thông tin người bán hiển thị ở chân trang và trang chính sách (docs/08 Phần IV). */
@@ -20,9 +20,12 @@ export const SITE = {
     taxCode: "", // ĐIỀN: mã số thuế (nếu có; để trống thì ẩn)
   },
   social: {
-    facebook: "", // ĐIỀN (để trống thì ẩn)
-    instagram: "", // ĐIỀN
-    tiktok: "", // ĐIỀN
+    threads:
+      "https://www.tiktok.com/@lamora.flower?_r=1&_t=ZS-9AjWq60vy2a&fbclid=PAZXh0bgNhZW0CMTEAcGRvZgJzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAaeqIOg-43wusxlywrrou62CS-ZQcadkVgl9hWbHcka-GEp2e554BnKgroPV8Q_aem_pc1NdAVVG21qD4uHa6biHQ", // ĐIỀN (để trống thì ẩn)
+    instagram:
+      "https://www.instagram.com/lamora.flowers.shop?utm_source=ig_web_button_share_sheet&psln=ZDNlZDc0MzIxNw==", // ĐIỀN
+    tiktok:
+      "https://www.tiktok.com/@lamora.flower?_r=1&_t=ZS-9AjWq60vy2a&fbclid=PAZXh0bgNhZW0CMTEAcGRvZgJzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAaeqIOg-43wusxlywrrou62CS-ZQcadkVgl9hWbHcka-GEp2e554BnKgroPV8Q_aem_pc1NdAVVG21qD4uHa6biHQ", // ĐIỀN
   },
 } as const;
 
@@ -60,6 +63,6 @@ export const HOME_HERO = {
 export const BRAND_PROMISES: { title: string; description: string }[] = [
   { title: "Hoa lụa cao cấp", description: "Chất liệu mềm, màu tự nhiên, giữ dáng lâu." },
   { title: "Thiệp lời nhắn miễn phí", description: "Gửi tặng người thương kèm lời chúc riêng." },
-  { title: "Giao toàn quốc", description: "Đóng gói kỹ, miễn phí ship cho đơn từ 800.000₫." },
+  { title: "Giao toàn quốc", description: "Đóng gói kỹ, shop báo phí vận chuyển khi liên hệ." },
   { title: "Đổi trả trong 7 ngày", description: "Hoa móp hoặc lỗi do vận chuyển, shop đổi mới." },
 ];

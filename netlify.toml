@@ -2,8 +2,9 @@
 # (Site configuration → Environment variables) theo từng ngữ cảnh Production / Deploy Previews.
 
 [build]
-  # Áp migration (tương thích ngược) rồi build. DIRECT_URL là bản kết nối trực tiếp của Neon.
-  command = "pnpm prisma migrate deploy && pnpm build"
+  # Sinh Prisma client (thư mục src/generated không commit), áp migration (tương thích ngược) rồi build.
+  # DIRECT_URL là bản kết nối trực tiếp của Neon.
+  command = "pnpm prisma generate && pnpm prisma migrate deploy && pnpm build"
   publish = ".next"
   # Bỏ qua build khi chỉ sửa tài liệu/CI (tiết kiệm credits, docs/09 mục 2.1). Thoát 0 = bỏ qua build.
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)docs' ':(exclude)*.md' ':(exclude).github' ':(exclude)e2e'"

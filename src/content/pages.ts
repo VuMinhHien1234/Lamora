@@ -3,6 +3,7 @@ import {
   FREE_SHIPPING_THRESHOLD,
   GIFT_WRAP_FEE,
   SHIPPING_FEES,
+  SHIPPING_FEE_ENABLED,
 } from "@/config/shipping";
 import { SITE } from "@/config/site";
 import { formatVnd } from "@/lib/money";
@@ -92,14 +93,19 @@ function shippingBody(): string {
       NORTH: "Miền Bắc (ngoài Hà Nội)",
       CENTRAL_SOUTH: "Từ Thanh Hóa trở vào",
     }[zone];
-    return `- **${label}:** ${formatVnd(SHIPPING_FEES[zone])}, dự kiến ${ESTIMATED_DELIVERY_DAYS[zone]}`;
+    const fee = SHIPPING_FEE_ENABLED ? `${formatVnd(SHIPPING_FEES[zone])}, ` : "";
+    return `- **${label}:** ${fee}dự kiến ${ESTIMATED_DELIVERY_DAYS[zone]}`;
   });
   return `
-## Phí vận chuyển theo khu vực
+## ${SHIPPING_FEE_ENABLED ? "Phí vận chuyển theo khu vực" : "Thời gian giao theo khu vực"}
 
 ${rows.join("\n")}
 
-**Miễn phí vận chuyển** cho đơn hàng từ ${formatVnd(FREE_SHIPPING_THRESHOLD)}.
+${
+  SHIPPING_FEE_ENABLED
+    ? `**Miễn phí vận chuyển** cho đơn hàng từ ${formatVnd(FREE_SHIPPING_THRESHOLD)}.`
+    : "Phí vận chuyển không tính trên website. Shop sẽ báo phí cho bạn khi liên hệ xác nhận đơn."
+}
 
 ## Thời gian giao hàng
 
