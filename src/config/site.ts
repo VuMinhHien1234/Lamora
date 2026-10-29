@@ -20,12 +20,9 @@ export const SITE = {
     taxCode: "", // ĐIỀN: mã số thuế (nếu có; để trống thì ẩn)
   },
   social: {
-    threads:
-      "https://www.tiktok.com/@lamora.flower?_r=1&_t=ZS-9AjWq60vy2a&fbclid=PAZXh0bgNhZW0CMTEAcGRvZgJzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAaeqIOg-43wusxlywrrou62CS-ZQcadkVgl9hWbHcka-GEp2e554BnKgroPV8Q_aem_pc1NdAVVG21qD4uHa6biHQ", // ĐIỀN (để trống thì ẩn)
-    instagram:
-      "https://www.instagram.com/lamora.flowers.shop?utm_source=ig_web_button_share_sheet&psln=ZDNlZDc0MzIxNw==", // ĐIỀN
-    tiktok:
-      "https://www.tiktok.com/@lamora.flower?_r=1&_t=ZS-9AjWq60vy2a&fbclid=PAZXh0bgNhZW0CMTEAcGRvZgJzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAaeqIOg-43wusxlywrrou62CS-ZQcadkVgl9hWbHcka-GEp2e554BnKgroPV8Q_aem_pc1NdAVVG21qD4uHa6biHQ", // ĐIỀN
+    threads: "", // ĐIỀN: link Threads của shop (để trống thì ẩn)
+    instagram: "https://www.instagram.com/lamora.flowers.shop",
+    tiktok: "https://www.tiktok.com/@lamora.flower",
   },
 } as const;
 
