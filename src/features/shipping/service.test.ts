@@ -5,6 +5,7 @@ import {
   NORTH_PROVINCE_CODES,
   SHIPPING_FEES,
 } from "@/config/shipping";
+import * as shippingConfig from "@/config/shipping";
 import { logger } from "@/lib/logger";
 import { findProvince, listProvinces, listWards } from "./address-data";
 import { quoteShippingSchema } from "./schema";
@@ -15,6 +16,18 @@ import {
   quoteShipping,
   resolveAddress,
 } from "./service";
+
+// Cho phép bật/tắt cờ phí ship trong test. Mặc định bật để kiểm tra bảng phí; có test riêng cho trạng thái tắt.
+const flag = vi.hoisted(() => ({ enabled: true }));
+vi.mock("@/config/shipping", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/config/shipping")>();
+  return {
+    ...actual,
+    get SHIPPING_FEE_ENABLED() {
+      return flag.enabled;
+    },
+  };
+});
 
 describe("dữ liệu địa chỉ", () => {
   it("có đủ 34 tỉnh/thành và 3.321 phường/xã", async () => {
@@ -85,6 +98,19 @@ describe("calculateShippingFee", () => {
     expect(calculateShippingFee("NORTH", FREE_SHIPPING_THRESHOLD - 1)).toBe(35_000);
     expect(calculateShippingFee("NORTH", FREE_SHIPPING_THRESHOLD)).toBe(0);
     expect(calculateShippingFee("CENTRAL_SOUTH", FREE_SHIPPING_THRESHOLD + 1)).toBe(0);
+  });
+});
+
+describe("khi tắt phí ship (SHIPPING_FEE_ENABLED = false)", () => {
+  it("mọi đơn đều 0đ, kể cả dưới mốc miễn phí", () => {
+    flag.enabled = false;
+    try {
+      expect(shippingConfig.SHIPPING_FEE_ENABLED).toBe(false);
+      expect(calculateShippingFee("CENTRAL_SOUTH", 100_000)).toBe(0);
+      expect(quoteShipping("79", 500_000).shippingFee).toBe(0);
+    } finally {
+      flag.enabled = true;
+    }
   });
 });
 

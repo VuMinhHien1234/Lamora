@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { GIFT_WRAP_FEE } from "@/config/shipping";
+import { GIFT_WRAP_FEE, SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import type { CartValidation } from "@/features/cart";
 import { formatVnd } from "@/lib/money";
 
@@ -61,22 +61,29 @@ export function OrderSummary({ validation, shippingFee, wrapCount }: OrderSummar
       <SummaryLines validation={validation} />
       <dl className="flex flex-col gap-2 border-t border-sand-200 pt-4">
         <Row label="Tạm tính" value={formatVnd(validation.subtotal)} />
-        <Row
-          label="Phí vận chuyển"
-          value={
-            shippingFee === null
-              ? "Chọn tỉnh để tính"
-              : shippingFee === 0
-                ? "Miễn phí"
-                : formatVnd(shippingFee)
-          }
-        />
+        {SHIPPING_FEE_ENABLED && (
+          <Row
+            label="Phí vận chuyển"
+            value={
+              shippingFee === null
+                ? "Chọn tỉnh để tính"
+                : shippingFee === 0
+                  ? "Miễn phí"
+                  : formatVnd(shippingFee)
+            }
+          />
+        )}
         {wrapFee > 0 && <Row label="Gói quà" value={formatVnd(wrapFee)} />}
       </dl>
       <div className="flex items-baseline justify-between border-t border-sand-200 pt-4">
         <span className="type-body font-medium">Tổng cộng</span>
         <span className="type-price">{formatVnd(total)}</span>
       </div>
+      {!SHIPPING_FEE_ENABLED && (
+        <p className="type-small text-stone-500">
+          Chưa gồm phí vận chuyển. Shop sẽ báo phí khi liên hệ xác nhận đơn.
+        </p>
+      )}
     </div>
   );
 }

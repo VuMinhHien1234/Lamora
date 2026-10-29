@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import { formatVnd } from "@/lib/money";
 import type { OrderConfirmation } from "../types";
 
@@ -80,16 +81,23 @@ export function OrderRecap({ order }: { order: OrderConfirmation }) {
       <RecapItems items={order.items} />
       <dl className="flex flex-col gap-2 border-t border-sand-200 pt-4">
         <Row label="Tạm tính" value={formatVnd(order.subtotal)} />
-        <Row
-          label="Phí vận chuyển"
-          value={order.shippingFee === 0 ? "Miễn phí" : formatVnd(order.shippingFee)}
-        />
+        {(SHIPPING_FEE_ENABLED || order.shippingFee > 0) && (
+          <Row
+            label="Phí vận chuyển"
+            value={order.shippingFee === 0 ? "Miễn phí" : formatVnd(order.shippingFee)}
+          />
+        )}
         {order.giftWrapFee > 0 && <Row label="Gói quà" value={formatVnd(order.giftWrapFee)} />}
         <div className="flex items-baseline justify-between border-t border-sand-200 pt-3">
           <dt className="type-body font-medium">Tổng cộng</dt>
           <dd className="type-price">{formatVnd(order.total)}</dd>
         </div>
       </dl>
+      {!SHIPPING_FEE_ENABLED && order.shippingFee === 0 && (
+        <p className="type-small text-stone-500">
+          Chưa gồm phí vận chuyển. Shop sẽ báo phí khi liên hệ xác nhận đơn.
+        </p>
+      )}
       <RecapAddress order={order} />
     </section>
   );

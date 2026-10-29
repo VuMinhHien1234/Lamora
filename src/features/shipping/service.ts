@@ -4,6 +4,7 @@ import {
   HANOI_PROVINCE_CODE,
   NORTH_PROVINCE_CODES,
   SHIPPING_FEES,
+  SHIPPING_FEE_ENABLED,
   type ShippingZone,
 } from "@/config/shipping";
 import { logger } from "@/lib/logger";
@@ -22,6 +23,7 @@ export function getZoneByProvince(provinceCode: string): ShippingZone {
 
 /** Phí giao hàng. `subtotal` là tiền hàng trước giảm giá; đạt mốc miễn phí thì 0đ. */
 export function calculateShippingFee(zone: ShippingZone, subtotal: number): number {
+  if (!SHIPPING_FEE_ENABLED) return 0;
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEES[zone];
 }
 

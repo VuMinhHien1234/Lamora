@@ -10,3 +10,4 @@ allowBuilds:
 # ở `pnpm audit`. Ép dùng bản đã vá (>=3.23.1).
 overrides:
   mysql2: ">=3.23.1"
+  zod: ">=4.6.6"

@@ -7,7 +7,7 @@ type FooterColumn = { title: string; links?: NavLink[]; lines?: string[] };
 function buildColumns(): FooterColumn[] {
   const { contact, social } = SITE;
   const socialLines = Object.entries({
-    Facebook: social.facebook,
+    Threads: social.threads,
     Instagram: social.instagram,
     TikTok: social.tiktok,
   })

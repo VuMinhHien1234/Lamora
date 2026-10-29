@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MoneyText } from "@/components/ui/money-text";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import type { AddressOption } from "@/features/shipping";
 import { formatDate } from "@/lib/date";
 import type { AdminOrderDetail } from "../admin-types";
@@ -120,7 +121,9 @@ function OrderTotals({ order }: { order: AdminOrderDetail }) {
   return (
     <dl className="mt-4 flex flex-col gap-1 border-t border-sand-200 pt-3">
       <TotalRow label="Tạm tính" amount={order.subtotal} />
-      <TotalRow label="Phí vận chuyển" amount={order.shippingFee} />
+      {(SHIPPING_FEE_ENABLED || order.shippingFee > 0) && (
+        <TotalRow label="Phí vận chuyển" amount={order.shippingFee} />
+      )}
       {order.giftWrapFee > 0 && <TotalRow label="Gói quà" amount={order.giftWrapFee} />}
       {order.discountAmount > 0 && <TotalRow label="Giảm giá" amount={-order.discountAmount} />}
       <TotalRow label="Tổng cộng" amount={order.total} strong />

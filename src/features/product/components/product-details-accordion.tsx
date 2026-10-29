@@ -1,6 +1,6 @@
 import { Accordion, AccordionItem } from "@/components/ui/accordion";
 import { Markdown } from "@/components/ui/markdown";
-import { FREE_SHIPPING_THRESHOLD } from "@/config/shipping";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE_ENABLED } from "@/config/shipping";
 import { SITE } from "@/config/site";
 import { formatVnd } from "@/lib/money";
 import type { ShopProduct } from "../shop-types";
@@ -47,8 +47,10 @@ export function ProductDetailsAccordion({ product }: Props) {
         <AccordionItem title="Giao hàng & đổi trả">
           <div className="grid gap-3">
             <p>
-              Giao toàn quốc trong 1–5 ngày. Miễn phí giao hàng cho đơn từ{" "}
-              {formatVnd(FREE_SHIPPING_THRESHOLD)}.
+              Giao toàn quốc trong 1–5 ngày.{" "}
+              {SHIPPING_FEE_ENABLED
+                ? `Miễn phí giao hàng cho đơn từ ${formatVnd(FREE_SHIPPING_THRESHOLD)}.`
+                : "Phí vận chuyển shop sẽ báo khi liên hệ xác nhận đơn."}
             </p>
             <p>Đổi trả trong 7 ngày nếu sản phẩm lỗi hoặc không đúng mô tả.</p>
           </div>
